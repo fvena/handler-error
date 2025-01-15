@@ -10,6 +10,11 @@ class AppError extends HandlerError {
   }
 }
 
+/**
+ * Calls method2 as part of a demonstration of error propagation.
+ * 
+ * @throws {AppError} Propagates any error thrown by method2 up the call stack.
+ */
 function method1() {
   method2();
 }

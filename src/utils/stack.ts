@@ -6,11 +6,23 @@ import { parseStack } from "error-stack-parser-es/lite";
 /**
  * Formats a stack trace into a cleaned and human-readable array of `StackFrame` objects.
  *
- * - Filters out frames from `node_modules` and internal Node.js modules.
- * - Converts absolute file paths into relative paths based on the current working directory.
+ * @remarks
+ * This function processes raw stack trace information by:
+ * - Filtering out frames from `node_modules` and internal Node.js modules
+ * - Removing frames with potential library parsing issues
+ * - Converting absolute file paths to relative paths
  *
- * @param stack - The raw stack trace string.
- * @returns An array of formatted `StackFrame` objects.
+ * @param stack - The raw stack trace string to be parsed and formatted
+ * @returns An array of formatted stack frames with relative file paths and key stack information
+ *
+ * @throws {Error} Logs parsing errors to console and returns an empty array
+ *
+ * @example
+ * ```typescript
+ * const stackTrace = new Error().stack;
+ * const formattedStack = formatStack(stackTrace);
+ * // Returns cleaned stack frames with relative file paths
+ * ```
  */
 export function formatStack(stack: string): StackFrame[] {
   try {
@@ -39,14 +51,19 @@ export function formatStack(stack: string): StackFrame[] {
  * Converts an absolute file path or a file URL to a relative path based on the current working directory.
  *
  * @param filePath - The absolute file path or file URL to be converted.
- * @returns The relative path from the current working directory to the given file path.
- * @throws Will throw an error if the input is not a valid URL or absolute path.
+ * @returns The relative path from the current working directory to the given file path, or the original file path if conversion fails.
+ *
+ * @remarks
+ * This function handles both file URLs and absolute file paths, with special handling for Windows platforms.
+ * If the conversion fails, it returns the original input path to prevent breaking the calling code.
  *
  * @example
  * ```typescript
  * const relativePath = getRelativePath("file:///Users/fvena/Sites/handler-error/src/utils/stack.ts");
- * console.log(relativePath); // Outputs the relative path based on the current working directory
+ * console.log(relativePath); // Outputs: src/utils/stack.ts
  * ```
+ *
+ * @throws {Error} If the input is not a valid URL or absolute path (caught internally).
  */
 export function getRelativePath(filePath: string): string {
   try {

@@ -50,6 +50,8 @@
 ## ✨ Features
 
 - **Custom Error Class**: HandlerError to encapsulate detailed error information, including severity, metadata, and causation.
+- **Flexible Constructor**: Create errors with a message, code, metadata, and cause.
+- **Severity Levels**: Assign severity levels to errors for better handling and logging.
 
 ## 📦 Installation
 
@@ -212,6 +214,31 @@ The HandlerError library supports the following severity levels:
 | warning  | For non-critical issues that don't prevent operation            |
 | info     | For informational messages about error handling                 |
 | debug    | For detailed debugging information                              |
+
+#### Using Severity Levels
+
+The library provides static methods to create errors with specific severity levels. This simplifies error creation and ensures consistency
+
+> **Note:** The severity level is set to `error` by default.
+
+```typescript
+import { HandlerError } from "handler-error";
+
+// Add type information
+const criticalError: HandlerError = HandlerError.critical(
+  "Database connection failed",
+  "DB_001",
+  { attemptCount: 3 },
+  new Error("Connection timeout"),
+);
+
+// Add practical examples for each severity
+const dbError = HandlerError.critical("Database connection failed"); // System cannot function
+const authError = HandlerError.error("Invalid credentials"); // Operation failed
+const rateLimit = HandlerError.warning("Rate limit at 80%"); // Potential issue
+const configLoad = HandlerError.info("Using fallback config"); // Important information
+const queryTime = HandlerError.debug("Query took 1.2s"); // Performance tracking
+```
 
 ### Error Code Conventions
 

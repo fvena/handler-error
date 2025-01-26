@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop
+      - "feature/**"
+      - "fix/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

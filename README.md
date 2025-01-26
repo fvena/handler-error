@@ -4,8 +4,8 @@
   ⭐ &nbsp;&nbsp;<strong>to the project if you like it</strong> ↗️:
 </p>
 
-<h2 align="center">Handler Error</h2>
-<p align="center">Simplify error management with context-rich, standardized debugging for Node.js and browsers.</p>
+<h2 align="center">HandlerError Library</h2>
+<p align="center">A robust and customizable error handling library for TypeScript, designed to simplify error management and provide useful utilities for debugging, logging, and serialization.</p>
 
 <br/>
 
@@ -49,18 +49,9 @@
 
 ## ✨ Features
 
-- **Custom Error Handling**: Create errors with detailed context, descriptions, solutions, and metadata.
+- **Custom Error Class**: HandlerError to encapsulate detailed error information, including severity, metadata, and causation.
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-Ensure you have the latest version of npm installed and a supported version of Node.js:
-
-- **Node.js**: >=18.0.0
-- **Browser Compatibility**: Modern browsers (Chrome, Firefox, Edge, Safari)
-
-### Installation
+## 📦 Installation
 
 ```bash
 # Install with npm:
@@ -73,9 +64,169 @@ yarn add handler-error
 pnpm add handler-error
 ```
 
-## 🧑‍💻 Usage
+## 🚀 Getting Started
+
+### Basic Usage
+
+```typescript
+import { HandlerError } from "handler-error";
+
+try {
+  throw new HandlerError("Something went wrong");
+} catch (error) {
+  console.error(error.serialize());
+}
+```
+
+### Custom errors class (recommended)
+
+To create a custom error class, extend the `HandlerError` class and pass the arguments to the parent constructor.
+
+- Create a custom error class.
+
+  ```typescript
+  import { HandlerError } from "handler-error";
+
+  class AppError extends HandlerError {
+    constructor(...arguments_) {
+      super(...arguments_);
+    }
+  }
+  ```
+
+- Type guard to check if an error is an instance of `AppError`.
+
+  ```typescript
+  function isAppError(error: Error): error is AppError {
+    return error instanceof AppError;
+  }
+  ```
+
+- Catch and handle the custom error.
+
+  ```typescript
+  try {
+    throw new AppError("Something went wrong");
+  } catch (error) {
+    if (isAppError(error)) {
+      console.error(error.serialize());
+    }
+  }
+  ```
+
+### Handling errors with a custom handler
+
+```typescript
+function handleError(error: Error) {
+  if (error instanceof AppError) {
+    console.error("AppError:", error.serialize());
+  } else {
+    console.error("Unknown error:", error.message);
+  }
+}
+
+try {
+  throw new AppError("Something went wrong");
+} catch (error) {
+  handleError(error);
+}
+```
 
 ## 📖 API Reference
+
+### Flexible Error Creation
+
+The HandlerError class provides a highly flexible constructor that adapts to different scenarios. You can include additional metadata, specify an error code, or link to a cause.
+
+The constructor accepts the following arguments:
+
+1. `message` (required): A message describing the error.
+1. `code` (optional): A custom error code.
+1. `metadata` (optional): Additional information to provide context for the error.
+1. `cause` (optional): The cause of the error.
+
+You must maintain the order of the arguments to ensure correct behavior. However, any optional argument can be omitted without passing undefined, resulting in a more elegant and intuitive constructor design.
+
+```typescript
+import { HandlerError } from "handler-error";
+
+// Create a simple error with a message.
+const error = new HandlerError("Something went wrong");
+
+// Create an error with a custom code.
+const error = new HandlerError("Something went wrong", "ERR_CUSTOM");
+
+// Create an error with additional metadata.
+const metadata = { user: "John Doe" };
+const error = new HandlerError("Something went wrong", metadata);
+
+// Create an error with a cause.
+const cause = new HandlerError("Internal error");
+const error = new HandlerError("Something went wrong", cause);
+
+// Create an error with a custom code and cause.
+const cause = new HandlerError("Internal error");
+const error = new HandlerError("Something went wrong", "ERR_CUSTOM", cause);
+
+// Create an error with metadata and a cause.
+const metadata = { user: "John Doe" };
+const cause = new HandlerError("Internal error");
+
+const error = new HandlerError("Something went wrong", metadata, cause);
+
+// Create an error with all arguments.
+const metadata = { user: "John Doe" };
+const cause = new HandlerError("Internal error");
+
+const error = new HandlerError("Something went wrong", "ERR_CUSTOM", metadata, cause);
+```
+
+### Properties
+
+| Property    | Type           | Description                                                                   |
+| ----------- | -------------- | ----------------------------------------------------------------------------- |
+| `id`        | `string`       | Unique identifier for the error.                                              |
+| `cause`     | `HandlerError` | The cause of the error.                                                       |
+| `code`      | `string`       | Custom error code for identifying the error.                                  |
+| `message`   | `string`       | Message describing the error.                                                 |
+| `metadata`  | `object`       | Additional information to provide context for the error.                      |
+| `name`      | `string`       | Name of the error class.                                                      |
+| `severity`  | `Severity`     | Severity level of the error: `critical`, `error`, `warning`, `info`, `debug`. |
+| `timestamp` | `Date`         | Timestamp of when the error curred.                                           |
+
+### Methods
+
+| Method      | Description                                                  | Return Value      |
+| ----------- | ------------------------------------------------------------ | ----------------- |
+| `serialize` | Serialize the error to a plain object.                       | `SerializedError` |
+| `toString`  | Returns a human-readable string representation of the error. | `string`          |
+
+### Severity Levels
+
+The HandlerError library supports the following severity levels:
+
+| Level    | Usage                                                           |
+| -------- | --------------------------------------------------------------- |
+| critical | For errors that require immediate attention and system shutdown |
+| error    | For standard errors that prevent normal operation               |
+| warning  | For non-critical issues that don't prevent operation            |
+| info     | For informational messages about error handling                 |
+| debug    | For detailed debugging information                              |
+
+### Error Code Conventions
+
+We recommend following these conventions for error codes:
+
+- Use uppercase letters and underscores (e.g., `ERR_INVALID_INPUT`)
+- Start with a category prefix (e.g., `VAL_` for validation errors)
+- Include a numeric identifier (e.g., `DB_001`)
+
+Example categories:
+
+- `VAL_`: Validation errors
+- `AUTH_`: Authentication errors
+- `DB_`: Database errors
+- `API_`: API-related errors
 
 ## 🤝 Contributions
 

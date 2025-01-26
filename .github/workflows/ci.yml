@@ -1,0 +1,51 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint and Typecheck
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm run typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - run: npm ci --ignore-scripts
+      - run: npm run test
+
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - run: npm ci --ignore-scripts
+      - run: npm run build

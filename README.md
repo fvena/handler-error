@@ -240,6 +240,22 @@ const configLoad = HandlerError.info("Using fallback config"); // Important info
 const queryTime = HandlerError.debug("Query took 1.2s"); // Performance tracking
 ```
 
+## 📚 Modules
+
+### Handling Error Chains
+
+The `ErrorChain` module provides utilities to work with chains of errors caused by one another. It allows you to trace, analyze, and process errors in a hierarchy.
+
+This module makes it easy to trace and analyze errors in complex systems, ensuring you can track their causes and severity efficiently.
+
+| Method           | Description                                                  | Return Value        |
+| ---------------- | ------------------------------------------------------------ | ------------------- |
+| `getErrorChain`  | Get the full chain of errors starting from a specific error. | `HandlerError[]`    |
+| `getRootCause`   | Retrieves the root error of the chain.                       | `HandlerError`      |
+| `mapErrors`      | Applies a mapper function to each error in the chain.        | `Array`             |
+| `findMostSevere` | Finds the most severe error in the chain.                    | `HandlerError`      |
+| `serializeChain` | Serializes the entire chain into an array of plain objects.  | `SerializedError[]` |
+
 ### Error Code Conventions
 
 We recommend following these conventions for error codes:

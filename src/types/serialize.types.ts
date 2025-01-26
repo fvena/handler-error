@@ -13,3 +13,8 @@ export interface SerializedError {
   severity: Severity;
   timestamp: string;
 }
+
+/**
+ * Represents the serialized error chain.
+ */
+export type SerializedErrorChain = Omit<SerializedError, "cause">;

@@ -16,3 +16,16 @@ export const ErrorSeverity = {
   DEBUG: "debug",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
+
+/**
+ * Represents the severity levels for an error.
+ *
+ * Higher numbers: more critical severity
+ */
+export const SEVERITY_WEIGHTS = {
+  [ErrorSeverity.CRITICAL]: 5,
+  [ErrorSeverity.DEBUG]: 1,
+  [ErrorSeverity.ERROR]: 4,
+  [ErrorSeverity.INFO]: 2,
+  [ErrorSeverity.WARNING]: 3,
+} as const;

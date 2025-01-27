@@ -53,6 +53,8 @@
 - **Flexible Constructor**: Create errors with a message, code, metadata, and cause.
 - **Severity Levels**: Assign severity levels to errors for better handling and logging.
 
+<br />
+
 ## 📦 Installation
 
 ```bash
@@ -65,6 +67,8 @@ yarn add handler-error
 # Install with pnpm:
 pnpm add handler-error
 ```
+
+<br />
 
 ## 🚀 Getting Started
 
@@ -134,6 +138,8 @@ try {
 }
 ```
 
+<br />
+
 ## 📖 API Reference
 
 ### Flexible Error Creation
@@ -181,48 +187,6 @@ const metadata = { user: "John Doe" };
 const cause = new HandlerError("Internal error");
 
 const error = new HandlerError("Something went wrong", "ERR_CUSTOM", metadata, cause);
-```
-
-### CodeHandlerError
-
-The CodeHandlerError class extends the base HandlerError class and integrates with the ErrorCatalog module to provide centralized error management. It allows you to define errors using a predefined error code from the catalog, automatically retrieving associated metadata such as messages and severity.
-
-the CodeHandlerError class requires an error code as the first argument. This code is used to retrieve the error message and severity from the catalog. You can also include a message as the second argument to override the default message.
-
-All API methods and properties from the HandlerError class are available in the CodeHandlerError class. The only difference is that
-
-```typescript
-import { CodeHandlerError } from "handler-error";
-
-// Create an error with a predefined error code.
-const error = new CodeHandlerError("ERR001");
-
-// Create an error with a custom message.
-const error = new CodeHandlerError("ERR001", "Custom message");
-
-// Create an error with additional metadata.
-const metadata = { user: "John Doe" };
-const error = new CodeHandlerError("ERR001", metadata);
-
-// Create an error with a cause.
-const cause = new CodeHandlerError("ERR002");
-const error = new CodeHandlerError("ERR001", cause);
-
-// Create an error with a custom message and cause.
-const cause = new CodeHandlerError("ERR002");
-const error = new CodeHandlerError("ERR001", "Custom message", cause);
-
-// Create an error with metadata and a cause.
-const metadata = { user: "John Doe" };
-const cause = new CodeHandlerError("ERR002");
-
-const error = new CodeHandlerError("ERR001", metadata, cause);
-
-// Create an error with all arguments.
-const metadata = { user: "John Doe" };
-const cause = new CodeHandlerError("ERR002");
-
-const error = new CodeHandlerError("ERR001", "Custom message", metadata, cause);
 ```
 
 ### Properties
@@ -282,9 +246,11 @@ const configLoad = HandlerError.info("Using fallback config"); // Important info
 const queryTime = HandlerError.debug("Query took 1.2s"); // Performance tracking
 ```
 
+<br />
+
 ## 📚 Modules
 
-### Error Chain
+### Handling Error Chains
 
 The `ErrorChain` module provides utilities to work with chains of errors caused by one another. It allows you to trace, analyze, and process errors in a hierarchy.
 
@@ -297,57 +263,6 @@ This module makes it easy to trace and analyze errors in complex systems, ensuri
 | `mapErrors`      | Applies a mapper function to each error in the chain.        | `Array`             |
 | `findMostSevere` | Finds the most severe error in the chain.                    | `HandlerError`      |
 | `serializeChain` | Serializes the entire chain into an array of plain objects.  | `SerializedError[]` |
-
-```typescript
-import { ErrorChain } from "handler-error";
-
-const error = new HandlerError("Something went wrong", "ERR001");
-const cause = new HandlerError("Internal error", "ERR002", undefined, error);
-
-// Get the full chain of errors
-const chain = ErrorChain.getErrorChain(cause);
-console.log(chain.length); // Output: 2
-
-// Get the root cause of the chain
-const rootCause = ErrorChain.getRootCause(cause);
-console.log(rootCause.message); // Output: Something went wrong
-
-// Find the most severe error in the chain
-const mostSevere = ErrorChain.findMostSevere(cause);
-console.log(mostSevere.message); // Output: Something went wrong
-
-// Serialize the entire chain
-const serializedChain = ErrorChain.serializeChain(cause);
-```
-
-### Error Catalog
-
-The ErrorCatalog module provides a centralized registry for managing error codes and their associated metadata. It allows developers to define a catalog of errors and retrieve information such as error messages, severity levels, and additional context by using error codes.
-
-| Method            | Description                                         | Return Value        |
-| ----------------- | --------------------------------------------------- | ------------------- |
-| `registerCatalog` | Register a catalog of errors.                       | `void`              |
-| `clearCatalog`    | Clear the error catalog.                            | `void`              |
-| `getEntry`        | Retrieve the error entry for a specific error code. | `ErrorCatalogEntry` |
-
-```typescript
-import { ErrorCatalog } from "handler-error";
-import { ErrorSeverity } from "handler-error";
-
-const catalog = {
-  VAL001: { message: "Critical validation error", severity: ErrorSeverity.CRITICAL },
-  VAL002: { message: "Validation warning", severity: ErrorSeverity.WARNING },
-  VAL003: { message: "Informational message", severity: ErrorSeverity.INFO },
-};
-
-// Register the catalog
-ErrorCatalog.registerCatalog(catalog);
-
-// Retrieve an error entry
-const entry = ErrorCatalog.getEntry("VAL001");
-console.log(entry.message); // Output: Critical validation error
-console.log(entry.severity); // Output: critical
-```
 
 ### Error Code Conventions
 
@@ -363,6 +278,8 @@ Example categories:
 - `AUTH_`: Authentication errors
 - `DB_`: Database errors
 - `API_`: API-related errors
+
+<br />
 
 ## 🤝 Contributions
 
@@ -380,6 +297,8 @@ I love collaboration! Here's how you can help improve Handler Error.
 1. Submit a pull request with your changes to the `main` branch of the `fvena/handler-error` repository.
 
 **Note:** Please follow our commit message convention and ensure documentation is updated for new features.
+
+<br />
 
 ## 📜 License
 

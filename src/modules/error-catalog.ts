@@ -5,7 +5,7 @@ export class ErrorCatalog {
   private static catalog: Catalog | undefined;
 
   /**
-   * Registers the error catalog.
+   * Register a catalog of errors.
    *
    * @param catalog - The error catalog to register.
    */
@@ -14,7 +14,7 @@ export class ErrorCatalog {
   }
 
   /**
-   * Clears the error catalog.
+   * Clear the error catalog.
    */
   public static clearCatalog(): void {
     ErrorCatalog.catalog = undefined;

@@ -189,40 +189,42 @@ The CodeHandlerError class extends the base HandlerError class and integrates wi
 
 the CodeHandlerError class requires an error code as the first argument. This code is used to retrieve the error message and severity from the catalog. You can also include a message as the second argument to override the default message.
 
-All API methods and properties from the HandlerError class are available in the CodeHandlerError class. The only difference is that
+> **Note:** If the provided error code is not found in the catalog, CodeHandlerError will throw an error. Ensure all error codes are registered in the ErrorCatalog before use.
+
+All API methods and properties from the HandlerError class are available in the CodeHandlerError class.
 
 ```typescript
 import { CodeHandlerError } from "handler-error";
 
 // Create an error with a predefined error code.
-const error = new CodeHandlerError("ERR001");
+const error = new CodeHandlerError("VAL_001");
 
 // Create an error with a custom message.
-const error = new CodeHandlerError("ERR001", "Custom message");
+const error = new CodeHandlerError("VAL_001", "Custom message");
 
 // Create an error with additional metadata.
 const metadata = { user: "John Doe" };
-const error = new CodeHandlerError("ERR001", metadata);
+const error = new CodeHandlerError("VAL_001", metadata);
 
 // Create an error with a cause.
-const cause = new CodeHandlerError("ERR002");
-const error = new CodeHandlerError("ERR001", cause);
+const cause = new CodeHandlerError("VAL_002");
+const error = new CodeHandlerError("VAL_001", cause);
 
 // Create an error with a custom message and cause.
-const cause = new CodeHandlerError("ERR002");
-const error = new CodeHandlerError("ERR001", "Custom message", cause);
+const cause = new CodeHandlerError("VAL_002");
+const error = new CodeHandlerError("VAL_001", "Custom message", cause);
 
 // Create an error with metadata and a cause.
 const metadata = { user: "John Doe" };
-const cause = new CodeHandlerError("ERR002");
+const cause = new CodeHandlerError("VAL_002");
 
-const error = new CodeHandlerError("ERR001", metadata, cause);
+const error = new CodeHandlerError("VAL_001", metadata, cause);
 
 // Create an error with all arguments.
 const metadata = { user: "John Doe" };
-const cause = new CodeHandlerError("ERR002");
+const cause = new CodeHandlerError("VAL_002");
 
-const error = new CodeHandlerError("ERR001", "Custom message", metadata, cause);
+const error = new CodeHandlerError("VAL_001", "Custom message", metadata, cause);
 ```
 
 ### Properties
@@ -290,19 +292,19 @@ The `ErrorChain` module provides utilities to work with chains of errors caused 
 
 This module makes it easy to trace and analyze errors in complex systems, ensuring you can track their causes and severity efficiently.
 
-| Method           | Description                                                  | Return Value        |
-| ---------------- | ------------------------------------------------------------ | ------------------- |
-| `getErrorChain`  | Get the full chain of errors starting from a specific error. | `HandlerError[]`    |
-| `getRootCause`   | Retrieves the root error of the chain.                       | `HandlerError`      |
-| `mapErrors`      | Applies a mapper function to each error in the chain.        | `Array`             |
-| `findMostSevere` | Finds the most severe error in the chain.                    | `HandlerError`      |
-| `serializeChain` | Serializes the entire chain into an array of plain objects.  | `SerializedError[]` |
+| Method           | Description                                                  | Return Value           |
+| ---------------- | ------------------------------------------------------------ | ---------------------- |
+| `getErrorChain`  | Get the full chain of errors starting from a specific error. | `HandlerError[]`       |
+| `getRootCause`   | Retrieves the root error of the chain.                       | `HandlerError`, `null` |
+| `mapErrors<T>`   | Applies a mapper function to each error in the chain.        | `T[]`                  |
+| `findMostSevere` | Finds the most severe error in the chain.                    | `HandlerError`, `null` |
+| `serializeChain` | Serializes the entire chain into an array of plain objects.  | `SerializedError[]`    |
 
 ```typescript
 import { ErrorChain } from "handler-error";
 
-const error = new HandlerError("Something went wrong", "ERR001");
-const cause = new HandlerError("Internal error", "ERR002", undefined, error);
+const error = new HandlerError("Something went wrong", "VAL_001");
+const cause = new HandlerError("Internal error", "VAL_002", undefined, error);
 
 // Get the full chain of errors
 const chain = ErrorChain.getErrorChain(cause);
@@ -335,18 +337,38 @@ import { ErrorCatalog } from "handler-error";
 import { ErrorSeverity } from "handler-error";
 
 const catalog = {
-  VAL001: { message: "Critical validation error", severity: ErrorSeverity.CRITICAL },
-  VAL002: { message: "Validation warning", severity: ErrorSeverity.WARNING },
-  VAL003: { message: "Informational message", severity: ErrorSeverity.INFO },
+  VAL_001: { message: "Critical validation error", severity: ErrorSeverity.CRITICAL },
+  VAL_002: { message: "Validation warning", severity: ErrorSeverity.WARNING },
+  VAL_003: { message: "Informational message", severity: ErrorSeverity.INFO },
 };
 
 // Register the catalog
 ErrorCatalog.registerCatalog(catalog);
 
 // Retrieve an error entry
-const entry = ErrorCatalog.getEntry("VAL001");
+const entry = ErrorCatalog.getEntry("VAL_001");
 console.log(entry.message); // Output: Critical validation error
 console.log(entry.severity); // Output: critical
+```
+
+#### Using Dynamic Messages
+
+The ErrorCatalog allows defining error messages with placeholders in the format {{ key }}, where key corresponds to a metadata property. These placeholders are replaced with the values provided when the error is created.
+
+```typescript
+import { ErrorCatalog } from "handler-error";
+import { ErrorSeverity } from "handler-error";
+
+const catalog = {
+  VAL001: { message: "Validation error for user {{ user }}", severity: ErrorSeverity.ERROR },
+};
+
+// Register the catalog
+ErrorCatalog.registerCatalog(catalog);
+
+// Create an error with metadata
+const error = new CodeHandlerError("VAL001", { user: "John Doe" });
+console.log(error.message); // Output: Validation error for user John Doe
 ```
 
 ### Error Code Conventions

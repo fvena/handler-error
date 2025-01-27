@@ -379,7 +379,7 @@ const error = new CodeHandlerError("VAL001", { user: "John Doe" });
 console.log(error.message); // Output: Validation error for user John Doe
 ```
 
-### Error Code Conventions
+#### Error Code Conventions
 
 We recommend following these conventions for error codes:
 
@@ -393,6 +393,139 @@ Example categories:
 - `AUTH_`: Authentication errors
 - `DB_`: Database errors
 - `API_`: API-related errors
+
+### Error Formatter
+
+The `Error Formatter` module provides an extensible framework for formatting error messages and error chains. It allows you to define custom formats for displaying errors in different contexts, such as logs, user interfaces, or reports.
+
+#### Basic Usage
+
+```typescript
+import { ErrorFormatter } from "handler-error";
+
+// Define a custom error formatter
+class CustomErrorFormatter extends ErrorFormatter {
+  format(error: HandlerError): string {
+    return `${error.id}: ${error.message}`;
+  }
+}
+
+// Use the custom error formatter
+const formatter = new CustomErrorFormatter();
+const error = new HandlerError("Something went wrong");
+
+console.log(formatter.format(error)); // Output: 1234: Something went wrong
+```
+
+#### Implementing Custom Formats with options
+
+```typescript
+import { ErrorFormatter } from "handler-error";
+
+// Define custom format options
+interface CustomFormatOptions {
+  context: string;
+}
+
+// Define a custom error formatter
+class CustomErrorFormatter extends ErrorFormatter<CustomFormatOptions> {
+  private defaultOptions: CustomFormatOptions = {
+    context: "production",
+  };
+
+  format(error: HandlerError): string {
+    return `${error.id}: ${error.message} (${this.defaultOptions.context})`;
+  }
+}
+
+// Use the custom error formatter with options
+const formatter = new CustomErrorFormatter();
+const error = new HandlerError("Something went wrong");
+
+console.log(formatter.format(error, options)); // Output: 1234: Something went wrong (production)
+```
+
+#### Implementing Custom Formats with custom options
+
+```typescript
+import { ErrorFormatter } from "handler-error";
+
+// Define custom format options
+interface CustomFormatOptions {
+  context: string;
+}
+
+// Define a custom error formatter
+class CustomErrorFormatter extends ErrorFormatter<CustomFormatOptions> {
+  private defaultOptions: CustomFormatOptions = {
+    context: "production",
+  };
+
+  format(error: HandlerError, options?: CustomFormatOptions): string {
+    const customOptions = { ...this.defaultOptions, ...options };
+    return `${error.id}: ${error.message} (${customOptions.context})`;
+  }
+}
+
+// Use the custom error formatter with custom options
+const formatter = new CustomErrorFormatter();
+const error = new HandlerError("Something went wrong");
+
+console.log(formatter.format(error, { context: "development" })); // Output: 1234: Something went wrong (development)
+```
+
+#### Using Error Formatters with default Error Chains
+
+```typescript
+import { ErrorFormatter, HandlerError } from "handler-error";
+
+// Define a custom error formatter
+class CustomErrorFormatter extends ErrorFormatter {
+  format(error: HandlerError): string {
+    return `${error.id}: ${error.message}`;
+  }
+}
+
+// Use the custom error formatter
+const formatter = new CustomErrorFormatter();
+const error = new HandlerError("Something went wrong");
+const cause = new HandlerError("Internal error", undefined, error);
+
+// Get the full chain of errors
+console.log(formatter.formatChain(cause));
+
+// Output:
+// 1234: Internal error
+// 5678: Something went wrong
+```
+
+#### Using Error Formatters with Custom Error Chains
+
+```typescript
+import { ErrorChain, ErrorFormatter, HandlerError } from "handler-error";
+
+class CustomErrorFormatter extends ErrorFormatter {
+  format(error: HandlerError): string {
+    return `${error.id}: ${error.message}`;
+  }
+
+  override formatChain(error: HandlerError): string {
+    return ErrorChain.mapErrors(error, (item, index) => `${index}: ${item.message}`).join("\n");
+  }
+}
+
+// Use the custom error formatter
+const formatter = new CustomErrorFormatter();
+const error = new HandlerError("Something went wrong");
+const cause = new HandlerError("Internal error", undefined, error);
+
+// Get the full chain of errors
+console.log(formatter.formatChain(cause));
+
+// Output:
+// 1: Internal error
+// 2: Something went wrong
+```
 
 <br />
 

@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/fvena/handler-error/compare/v2.1.0...v2.2.0) (2025-01-27)
+
+
+### Features
+
+* add ErrorChain module for managing chain of errors ([3d68eb2](https://github.com/fvena/handler-error/commit/3d68eb2e3c0f5c8debe3dc53e64d4f02c531f7b9))
+
 # [2.1.0](https://github.com/fvena/handler-error/compare/v2.0.0...v2.1.0) (2025-01-27)
 
 

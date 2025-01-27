@@ -1,6 +1,7 @@
 import type { Metadata } from "./types/handler-error.types";
 import { HandlerError } from "./handler-error";
 import { ErrorCatalog } from "./modules/error-catalog";
+import { DependencyContainer } from "./utils/dependency-container.utils";
 
 export class CodeHandlerError extends HandlerError {
   constructor(
@@ -10,7 +11,8 @@ export class CodeHandlerError extends HandlerError {
     argument4?: Error,
   ) {
     // Retrieve the catalog entry based on the error code
-    const catalogEntry = ErrorCatalog.getEntry(code);
+    const catalog = DependencyContainer.resolve("ErrorCatalog") as ErrorCatalog;
+    const catalogEntry = catalog.getEntry(code);
 
     // Reorganize arguments for the base class constructor
     // - If the second argument is a string, it is the error message

@@ -53,6 +53,8 @@
 - **Flexible Constructor**: Create errors with a message, code, metadata, and cause.
 - **Severity Levels**: Assign severity levels to errors for better handling and logging.
 
+<br />
+
 ## 📦 Installation
 
 ```bash
@@ -65,6 +67,8 @@ yarn add handler-error
 # Install with pnpm:
 pnpm add handler-error
 ```
+
+<br />
 
 ## 🚀 Getting Started
 
@@ -133,6 +137,8 @@ try {
   handleError(error);
 }
 ```
+
+<br />
 
 ## 📖 API Reference
 
@@ -284,9 +290,11 @@ const configLoad = HandlerError.info("Using fallback config"); // Important info
 const queryTime = HandlerError.debug("Query took 1.2s"); // Performance tracking
 ```
 
+<br />
+
 ## 📚 Modules
 
-### Error Chain
+### Handling Error Chains
 
 The `ErrorChain` module provides utilities to work with chains of errors caused by one another. It allows you to trace, analyze, and process errors in a hierarchy.
 
@@ -386,6 +394,8 @@ Example categories:
 - `DB_`: Database errors
 - `API_`: API-related errors
 
+<br />
+
 ## 🤝 Contributions
 
 I love collaboration! Here's how you can help improve Handler Error.
@@ -402,6 +412,8 @@ I love collaboration! Here's how you can help improve Handler Error.
 1. Submit a pull request with your changes to the `main` branch of the `fvena/handler-error` repository.
 
 **Note:** Please follow our commit message convention and ensure documentation is updated for new features.
+
+<br />
 
 ## 📜 License
 

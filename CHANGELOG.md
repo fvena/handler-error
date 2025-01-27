@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/fvena/handler-error/compare/v2.3.0...v2.4.0) (2025-01-27)
+
+
+### Features
+
+* add ErrorChain handling methods to HandlerError ([ddc2bfb](https://github.com/fvena/handler-error/commit/ddc2bfbca13561ae9d36f1cd19e8df37c3742e00))
+
 # [2.3.0](https://github.com/fvena/handler-error/compare/v2.2.0...v2.3.0) (2025-01-27)
 
 ### Features

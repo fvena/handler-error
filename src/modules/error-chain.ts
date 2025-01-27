@@ -44,8 +44,11 @@ export class ErrorChain {
    * @param mapper - A function to apply to each `HandlerError` instance.
    * @returns An array of results from the mapper function.
    */
-  public static mapErrors<T>(error: HandlerError, mapper: (error: HandlerError) => T): T[] {
-    return ErrorChain.getErrorChain(error).map((item) => mapper(item));
+  public static mapErrors<T>(
+    error: HandlerError,
+    mapper: (error: HandlerError, index: number) => T,
+  ): T[] {
+    return ErrorChain.getErrorChain(error).map((item, index) => mapper(item, index));
   }
 
   /**

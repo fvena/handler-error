@@ -4,6 +4,7 @@ import { ErrorSeverity } from "../src/constants";
 import { ErrorCatalog } from "../src/modules/error-catalog";
 import { CodeHandlerError } from "../src/code-handler-error";
 import { HandlerError } from "../src/handler-error";
+import { DependencyContainer } from "../src/utils/dependency-container.utils";
 
 const catalog: Catalog = {
   VAL001: { message: "Test error", severity: ErrorSeverity.CRITICAL },
@@ -12,7 +13,7 @@ const catalog: Catalog = {
   VAL004: { message: "Test debug", severity: ErrorSeverity.DEBUG },
 };
 
-ErrorCatalog.registerCatalog(catalog);
+DependencyContainer.register("ErrorCatalog", new ErrorCatalog(catalog));
 
 describe("CodeHandlerError", () => {
   describe("constructor", () => {
@@ -230,6 +231,16 @@ describe("CodeHandlerError", () => {
 
       // Assert
       expect(errorString).toBe("[CRITICAL VAL001] CodeHandlerError: Test error");
+    });
+  });
+
+  describe("dependency resolution", () => {
+    it("should throw when ErrorCatalog is not registered", () => {
+      DependencyContainer.clear();
+
+      expect(() => new CodeHandlerError("VAL001")).toThrowError(
+        "Dependency with key 'ErrorCatalog' is not registered",
+      );
     });
   });
 });

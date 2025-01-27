@@ -1,5 +1,5 @@
 import type { Catalog } from "../../src/types/error-catalog.types";
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { ErrorSeverity } from "../../src/constants";
 import { ErrorCatalog } from "../../src/modules/error-catalog";
 
@@ -11,25 +11,12 @@ const catalog: Catalog = {
 };
 
 describe("ErrorCatalog", () => {
-  beforeEach(() => {
-    ErrorCatalog.clearCatalog();
-  });
-
-  it("should throw error if catalog is not registered", () => {
-    // Arrange
-    // eslint-disable-next-line unicorn/consistent-function-scoping -- Used to test function
-    const error = () => ErrorCatalog.getEntry("VAL001");
-
-    // Act & Assert
-    expect(error).toThrowError("Error catalog is not registered");
-  });
-
   it("should return an entry from the catalog", () => {
     // Arrange
-    ErrorCatalog.registerCatalog(catalog);
+    const errorCatalog = new ErrorCatalog(catalog);
 
     // Act
-    const error = ErrorCatalog.getEntry("VAL001");
+    const error = errorCatalog.getEntry("VAL001");
 
     // Assert
     expect(error.message).toBe("Test error");
@@ -38,10 +25,10 @@ describe("ErrorCatalog", () => {
 
   it("should throw error if an code is not found", () => {
     // Arrange
-    ErrorCatalog.registerCatalog(catalog);
+    const errorCatalog = new ErrorCatalog(catalog);
 
     // Act
-    const error = () => ErrorCatalog.getEntry("VAL005");
+    const error = () => errorCatalog.getEntry("VAL005");
 
     // Assert
     expect(error).toThrowError("Error code VAL005 not found in catalog");
@@ -53,10 +40,10 @@ describe("ErrorCatalog", () => {
       VAL001: { data: { key: "value" }, message: "Test error", severity: ErrorSeverity.CRITICAL },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
     // Act
-    const error = ErrorCatalog.getEntry("VAL001");
+    const error = errorCatalog.getEntry("VAL001");
 
     // Assert
     expect(error.message).toBe("Test error");
@@ -72,10 +59,10 @@ describe("ErrorCatalog.formatMessage", () => {
       VAL001: { message: "Test error {{ key }}", severity: ErrorSeverity.CRITICAL },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
     // Act
-    const error = ErrorCatalog.getEntry("VAL001", { key: "value" });
+    const error = errorCatalog.getEntry("VAL001", { key: "value" });
 
     // Assert
     expect(error.message).toBe("Test error value");
@@ -88,10 +75,10 @@ describe("ErrorCatalog.formatMessage", () => {
       VAL002: { message: "Error without variables", severity: ErrorSeverity.ERROR },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
     // Act
-    const error = ErrorCatalog.getEntry("VAL002");
+    const error = errorCatalog.getEntry("VAL002");
 
     // Assert
     expect(error.message).toBe("Error without variables");
@@ -104,10 +91,10 @@ describe("ErrorCatalog.formatMessage", () => {
       VAL004: { message: "Missing placeholder {{ otherKey }}", severity: ErrorSeverity.INFO },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
     // Act & Assert
-    expect(() => ErrorCatalog.getEntry("VAL004", { key: "value" })).toThrowError(
+    expect(() => errorCatalog.getEntry("VAL004", { key: "value" })).toThrowError(
       "Metadata key 'otherKey' not provided for message template",
     );
   });
@@ -118,10 +105,10 @@ describe("ErrorCatalog.formatMessage", () => {
       VAL005: { message: "Invalid metadata {{ key }}", severity: ErrorSeverity.CRITICAL },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
     // Act & Assert
-    expect(() => ErrorCatalog.getEntry("VAL005", { key: { nested: "object" } })).toThrowError(
+    expect(() => errorCatalog.getEntry("VAL005", { key: { nested: "object" } })).toThrowError(
       "Metadata key 'key' must be a string or number",
     );
   });
@@ -135,10 +122,10 @@ describe("ErrorCatalog.formatMessage", () => {
       },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
     // Act
-    const error = ErrorCatalog.getEntry("VAL006", { key1: "value1", key2: "value2" });
+    const error = errorCatalog.getEntry("VAL006", { key1: "value1", key2: "value2" });
 
     // Assert
     expect(error.message).toBe("Error with multiple placeholders: value1 and value2");
@@ -150,10 +137,10 @@ describe("ErrorCatalog.formatMessage", () => {
       VAL007: { message: "Error with one placeholder: {{ key }}", severity: ErrorSeverity.ERROR },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
     // Act
-    const error = ErrorCatalog.getEntry("VAL007", { extraKey: "extraValue", key: "value" });
+    const error = errorCatalog.getEntry("VAL007", { extraKey: "extraValue", key: "value" });
 
     // Assert
     expect(error.message).toBe("Error with one placeholder: value");
@@ -169,10 +156,10 @@ describe("ErrorCatalog.formatMessage", () => {
       },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
     // Act
-    const error = ErrorCatalog.getEntry("VAL008", { "another key": "anotherValue", key: "value" });
+    const error = errorCatalog.getEntry("VAL008", { "another key": "anotherValue", key: "value" });
 
     // Assert
     expect(error.message).toBe("Message with invalid placeholders {{key and {{another key}}");
@@ -186,9 +173,9 @@ describe("ErrorCatalog.formatMessage", () => {
       },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
-    expect(() => ErrorCatalog.getEntry("VAL009", { a: "value" })).toThrowError(
+    expect(() => errorCatalog.getEntry("VAL009", { a: "value" })).toThrowError(
       "Too many replacements in message template",
     );
   });
@@ -201,10 +188,10 @@ describe("ErrorCatalog.formatMessage", () => {
       },
     };
 
-    ErrorCatalog.registerCatalog(customCatalog);
+    const errorCatalog = new ErrorCatalog(customCatalog);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any -- Testing invalid metadata
-    expect(() => ErrorCatalog.getEntry("VAL010", "invalid" as any)).toThrowError(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- Testing invalid metadata
+    expect(() => errorCatalog.getEntry("VAL010", "invalid" as any)).toThrowError(
       "Metadata must be an object",
     );
   });

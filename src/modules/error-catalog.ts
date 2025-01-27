@@ -1,24 +1,11 @@
 import type { Metadata } from "../types";
 import type { Catalog, CatalogEntry } from "../types/error-catalog.types";
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class -- Class is used as a namespace
 export class ErrorCatalog {
-  private static catalog: Catalog | undefined;
+  private readonly catalog: Catalog;
 
-  /**
-   * Register a catalog of errors.
-   *
-   * @param catalog - The error catalog to register.
-   */
-  public static registerCatalog(catalog: Catalog): void {
-    ErrorCatalog.catalog = catalog;
-  }
-
-  /**
-   * Clear the error catalog.
-   */
-  public static clearCatalog(): void {
-    ErrorCatalog.catalog = undefined;
+  constructor(catalog: Catalog) {
+    this.catalog = catalog;
   }
 
   /**
@@ -28,16 +15,12 @@ export class ErrorCatalog {
    * @param metadata - The metadata for replacing placeholders in the message.
    * @returns The catalog entry for the specified error code.
    */
-  public static getEntry(code: string, metadata?: Metadata): CatalogEntry {
+  public getEntry(code: string, metadata?: Metadata): CatalogEntry {
     if (typeof code !== "string") {
       throw new TypeError("Invalid error code");
     }
 
-    if (!ErrorCatalog.catalog) {
-      throw new Error("Error catalog is not registered");
-    }
-
-    const catalogEntry = ErrorCatalog.catalog[code.trim()];
+    const catalogEntry = this.catalog[code.trim()];
 
     if (!catalogEntry) {
       throw new Error(`Error code ${code} not found in catalog`);
@@ -48,10 +31,7 @@ export class ErrorCatalog {
 
     // Format the message with metadata if provided
     if (metadata) {
-      entryWithFormattedMessage.message = ErrorCatalog.formatMessage(
-        catalogEntry.message,
-        metadata,
-      );
+      entryWithFormattedMessage.message = this.formatMessage(catalogEntry.message, metadata);
     }
 
     return entryWithFormattedMessage;
@@ -64,7 +44,7 @@ export class ErrorCatalog {
    * @param metadata - The metadata object providing values for placeholders.
    * @returns The formatted message with placeholders replaced by metadata values.
    */
-  private static formatMessage(message: string, metadata: Metadata): string {
+  private formatMessage(message: string, metadata: Metadata): string {
     const MAX_REPLACEMENTS = 100;
     let replacements = 0;
 

@@ -1,3 +1,13 @@
+# [2.3.0](https://github.com/fvena/handler-error/compare/v2.2.0...v2.3.0) (2025-01-27)
+
+
+### Features
+
+* add CodeHandlerError to define errors using error code ([a8307ce](https://github.com/fvena/handler-error/commit/a8307cee4009a7bb955136c339898781fe1f74b5))
+* add ErrorCatalog module for managing error entries ([2de2d49](https://github.com/fvena/handler-error/commit/2de2d4961bbdc0826219889aa698f2fa77950cdb))
+* enhance ErrorCatalog with dynamic message formatting using metadata ([df1a80c](https://github.com/fvena/handler-error/commit/df1a80c37cce3aae0c7c80b62598c760ae48c312))
+* enhance ErrorCatalog with dynamic message formatting using metadata ([8b73dac](https://github.com/fvena/handler-error/commit/8b73dacfb03005905a2f9e169d9cc0db8818d031))
+
 # [2.2.0](https://github.com/fvena/handler-error/compare/v2.1.0...v2.2.0) (2025-01-27)
 
 

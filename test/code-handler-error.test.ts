@@ -16,7 +16,7 @@ ErrorCatalog.registerCatalog(catalog);
 
 describe("CodeHandlerError", () => {
   describe("constructor", () => {
-    it("should create an error only wiht code", () => {
+    it("should create an error only with code", () => {
       // Arrange & Act
       const error = new CodeHandlerError("VAL001");
 

@@ -1,6 +1,6 @@
 {
   "name": "handler-error",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Handler-Error is a modular and type-safe TypeScript library that simplifies creating and managing custom errors, promoting best practices for large-scale projects.",
   "type": "module",
   "main": "dist/index.js",

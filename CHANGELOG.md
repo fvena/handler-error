@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/fvena/handler-error/compare/v2.4.0...v2.5.0) (2025-01-27)
+
+
+### Features
+
+* add dependency injection with a centralized container ([2044d29](https://github.com/fvena/handler-error/commit/2044d2907441a2ee890e2ab944742b5b6fcaea23))
+
 # [2.4.0](https://github.com/fvena/handler-error/compare/v2.3.0...v2.4.0) (2025-01-27)
 
 

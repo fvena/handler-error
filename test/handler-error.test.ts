@@ -209,6 +209,73 @@ describe("HandlerError", () => {
     });
   });
 
+  describe("error chain", () => {
+    const rootError = new Error("Root error");
+    const middleError = new HandlerError.critical("Middle error", rootError);
+    const topError = new HandlerError.warning("Top error", middleError);
+
+    it("should retrieve the chain of errors", () => {
+      // Arrange
+      const error = new HandlerError("Test error", topError);
+
+      // Act
+      const chain = error.getChain();
+
+      // Assert
+      expect(chain).toHaveLength(4);
+      expect(chain[0]?.message).toBe("Test error");
+      expect(chain[1]?.message).toBe("Top error");
+      expect(chain[2]?.message).toBe("Middle error");
+      expect(chain[3]?.message).toBe("Root error");
+    });
+
+    it("should retrieve the root cause of the error", () => {
+      // Arrange & Act
+      const error = new HandlerError("Test error", topError);
+
+      // Assert
+      expect(error.getChainRoot().message).toBe("Root error");
+    });
+
+    it("should map the error chain", () => {
+      // Arrange
+      const error = new HandlerError("Test error", topError);
+
+      // Act
+      const chain = error.mapChain((error) => error.message);
+
+      // Assert
+      expect(chain).toEqual(["Test error", "Top error", "Middle error", "Root error"]);
+    });
+
+    it("should find the most severe error in the chain", () => {
+      // Arrange
+      const error = new HandlerError.error("Test error", topError);
+
+      // Act
+      const mostSevere = error.findMostSevereInChain();
+
+      // Assert
+      expect(mostSevere.severity).toBe(ErrorSeverity.CRITICAL);
+      expect(mostSevere.message).toBe("Middle error");
+    });
+
+    it("should serialize the error chain", () => {
+      // Arrange
+      const error = new HandlerError("Test error", topError);
+
+      // Act
+      const serializedChain = error.serializeChain();
+
+      // Assert
+      expect(serializedChain).toHaveLength(4);
+      expect(serializedChain[0]?.message).toBe("Test error");
+      expect(serializedChain[1]?.message).toBe("Top error");
+      expect(serializedChain[2]?.message).toBe("Middle error");
+      expect(serializedChain[3]?.message).toBe("Root error");
+    });
+  });
+
   describe("serialize", () => {
     it("should serialize the error", () => {
       // Arrange

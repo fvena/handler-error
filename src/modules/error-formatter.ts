@@ -1,5 +1,6 @@
 import type { FormatterOptions } from "../types/error-formatter.types";
 import type { HandlerError } from "../handler-error";
+import { isHandlerError } from "../guards";
 import { ErrorChain } from "./error-chain";
 
 /**
@@ -23,6 +24,10 @@ export abstract class ErrorFormatter<T extends FormatterOptions | undefined = un
    * @returns The formatted error chain string.
    */
   public formatChain(error: HandlerError, options?: T): string {
+    if (!isHandlerError(error)) {
+      throw new TypeError("The error must be an instance of HandlerError.");
+    }
+
     const chain = ErrorChain.mapErrors(error, (item) => this.format(item, options));
     return chain.join("\n");
   }

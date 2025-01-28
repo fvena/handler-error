@@ -4,7 +4,6 @@ import { ErrorFormatter } from "../modules/error-formatter";
 import { isHandlerError } from "../guards/handler-error.guard";
 
 export interface TextFormatterOptions extends FormatterOptions {
-  indentSize: number;
   showMetadata: boolean;
   showTimestamp: boolean;
 }
@@ -13,7 +12,6 @@ export interface TextFormatterOptions extends FormatterOptions {
  */
 export class TextFormatter extends ErrorFormatter<TextFormatterOptions> {
   private defaultOptions: TextFormatterOptions = {
-    indentSize: 2,
     showMetadata: true,
     showTimestamp: true,
   };

@@ -24,4 +24,27 @@ describe("isHandlerError", () => {
     // Assert
     expect(result).toBe(false);
   });
+
+  it("should return false for null", () => {
+    // Arrange
+    // eslint-disable-next-line unicorn/no-null -- Testing null
+    const error = null as unknown as Error;
+
+    // Act
+    const result = isHandlerError(error);
+
+    // Assert
+    expect(result).toBe(false);
+  });
+
+  it("should return false for undefined", () => {
+    // Arrange
+    const error = undefined as unknown as Error;
+
+    // Act
+    const result = isHandlerError(error);
+
+    // Assert
+    expect(result).toBe(false);
+  });
 });

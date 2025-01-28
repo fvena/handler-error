@@ -23,6 +23,11 @@ export class JsonFormatter extends ErrorFormatter<JsonFormatterOptions> {
 
   constructor(options?: Partial<JsonFormatterOptions>) {
     super();
+
+    if (options?.indentSize && options.indentSize < 0) {
+      throw new Error("Indent size must be a positive number");
+    }
+
     this.defaultOptions = { ...this.defaultOptions, ...options };
   }
 

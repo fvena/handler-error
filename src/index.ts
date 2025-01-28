@@ -10,4 +10,5 @@ export * from "./types";
 // Guards & Utilities
 export * from "./guards";
 export * from "./modules";
+export * from "./formatters";
 /* eslint-enable */

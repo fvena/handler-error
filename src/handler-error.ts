@@ -95,7 +95,7 @@ export class HandlerError extends Error {
   /**
    * Applies a mapper function to each error in the chain and returns the resulting array.
    */
-  public mapChain<T>(mapper: (error: HandlerError) => T): T[] {
+  public mapChain<T>(mapper: (error: HandlerError, index: number) => T): T[] {
     return ErrorChain.mapErrors(this, mapper);
   }
 

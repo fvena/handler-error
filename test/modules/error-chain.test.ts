@@ -204,5 +204,39 @@ describe("ErrorChain", () => {
         },
       ]);
     });
+
+    it("should stringify the error chain", () => {
+      // Arrange
+      const rootError = new HandlerError("Root error");
+      const middleError = new HandlerError("Middle error", rootError);
+      const topError = new HandlerError("Top error", middleError);
+
+      // Act
+      const serializedChain = ErrorChain.toString(topError);
+
+      // Assert
+      expect(serializedChain).toBe(
+        `[ERROR] HandlerError: Top error\n` +
+          `[ERROR] HandlerError: Middle error\n` +
+          `[ERROR] HandlerError: Root error`,
+      );
+    });
+
+    it("should stringify error chain with mixed severities", () => {
+      // Arrange
+      const rootError = new HandlerError.debug("Root error");
+      const middleError = new HandlerError.warning("Middle error", rootError);
+      const topError = new HandlerError.critical("Top error", middleError);
+
+      // Act
+      const serializedChain = ErrorChain.toString(topError);
+
+      // Assert
+      expect(serializedChain).toBe(
+        `[CRITICAL] CriticalHandlerError: Top error\n` +
+          `[WARNING] WarningHandlerError: Middle error\n` +
+          `[DEBUG] DebugHandlerError: Root error`,
+      );
+    });
   });
 });

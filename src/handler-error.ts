@@ -113,6 +113,10 @@ export class HandlerError extends Error {
     return ErrorChain.serialize(this);
   }
 
+  public toStringChain(): string {
+    return ErrorChain.toString(this);
+  }
+
   /**
    * Serializes the error into a plain object.
    *

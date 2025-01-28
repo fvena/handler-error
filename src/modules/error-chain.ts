@@ -80,4 +80,15 @@ export class ErrorChain {
       timestamp: item.timestamp.toISOString(),
     }));
   }
+
+  /**
+   * Returns a human-readable string representation of the error chain.
+   *
+   * @returns A string representation of the error chain.
+   */
+  public static toString(error: HandlerError): string {
+    return ErrorChain.getErrorChain(error)
+      .map((item) => item.toString())
+      .join("\n");
+  }
 }

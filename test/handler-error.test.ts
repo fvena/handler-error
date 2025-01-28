@@ -274,6 +274,36 @@ describe("HandlerError", () => {
       expect(serializedChain[2]?.message).toBe("Middle error");
       expect(serializedChain[3]?.message).toBe("Root error");
     });
+
+    it("should return a string representation of the error chain", () => {
+      // Arrange
+      const error = new HandlerError("Test error", topError);
+
+      // Act
+      const errorString = error.toStringChain();
+
+      // Assert
+      expect(errorString).toBe(
+        `[ERROR] HandlerError: Test error\n` +
+          `[WARNING] WarningHandlerError: Top error\n` +
+          `[CRITICAL] CriticalHandlerError: Middle error\n` +
+          `[ERROR] HandlerError: Root error`,
+      );
+    });
+  });
+
+  it("should include error codes in the chain representation", () => {
+    // Arrange
+    const rootError = new HandlerError("Root error", "ROOT001");
+    const topError = new HandlerError("Top error", "TOP001", rootError);
+
+    // Act
+    const errorString = topError.toStringChain();
+
+    // Assert
+    expect(errorString).toBe(
+      `[ERROR TOP001] HandlerError: Top error\n` + `[ERROR ROOT001] HandlerError: Root error`,
+    );
   });
 
   describe("serialize", () => {

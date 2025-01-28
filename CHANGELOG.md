@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/fvena/handler-error/compare/v2.6.0...v2.7.0) (2025-01-28)
+
+
+### Features
+
+* add ErrorLogger for logging errors ([f876c92](https://github.com/fvena/handler-error/commit/f876c9225f186f70a94f0809673c14ab9f69ca74))
+
 # [2.6.0](https://github.com/fvena/handler-error/compare/v2.5.0...v2.6.0) (2025-01-28)
 
 

@@ -1,9 +1,10 @@
 import type { Metadata } from "./types/handler-error.types";
 import { HandlerError } from "./handler-error";
 import { ErrorCatalog } from "./modules/error-catalog";
-import { DependencyContainer } from "./utils/dependency-container.utils";
 
 export class CodeHandlerError extends HandlerError {
+  private static catalog?: ErrorCatalog;
+
   constructor(
     code: string,
     argument2?: Error | Metadata | string,
@@ -11,8 +12,15 @@ export class CodeHandlerError extends HandlerError {
     argument4?: Error,
   ) {
     // Retrieve the catalog entry based on the error code
-    const catalog = DependencyContainer.resolve("ErrorCatalog") as ErrorCatalog;
-    const catalogEntry = catalog.getEntry(code);
+    const currentCatalog = new.target.catalog;
+
+    if (!currentCatalog) {
+      throw new Error(
+        "The error catalog must be set before creating an instance of CodeHandlerError.",
+      );
+    }
+
+    const catalogEntry = currentCatalog.getEntry(code);
 
     // Reorganize arguments for the base class constructor
     // - If the second argument is a string, it is the error message
@@ -28,5 +36,15 @@ export class CodeHandlerError extends HandlerError {
 
     // Set the severity of the error based on the catalog entry
     Object.defineProperty(this, "severity", { value: catalogEntry.severity, writable: false });
+  }
+
+  /**
+   * Set the error catalog to use for error resolution
+   *
+   * @param catalog - The error catalog to use for error resolution
+   */
+  public static registerCatalog(catalog: ErrorCatalog) {
+    this.catalog = catalog;
+    return this;
   }
 }

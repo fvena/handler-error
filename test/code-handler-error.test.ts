@@ -1,21 +1,21 @@
-import type { Catalog } from "../src/types/error-catalog.types";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { ErrorSeverity } from "../src/constants";
-import { ErrorCatalog } from "../src/modules/error-catalog";
+import { StandardCatalog } from "../src/catalogs/standard-catalog";
 import { CodeHandlerError } from "../src/code-handler-error";
 import { HandlerError } from "../src/handler-error";
-import { DependencyContainer } from "../src/utils/dependency-container.utils";
 
-const catalog: Catalog = {
+const catalog = new StandardCatalog({
   VAL001: { message: "Test error", severity: ErrorSeverity.CRITICAL },
   VAL002: { message: "Test warning", severity: ErrorSeverity.WARNING },
   VAL003: { message: "Test info", severity: ErrorSeverity.INFO },
   VAL004: { message: "Test debug", severity: ErrorSeverity.DEBUG },
-};
-
-DependencyContainer.register("ErrorCatalog", new ErrorCatalog(catalog));
+});
 
 describe("CodeHandlerError", () => {
+  beforeAll(() => {
+    CodeHandlerError.registerCatalog(catalog);
+  });
+
   describe("constructor", () => {
     it("should create an error only with code", () => {
       // Arrange & Act
@@ -236,11 +236,66 @@ describe("CodeHandlerError", () => {
 
   describe("dependency resolution", () => {
     it("should throw when ErrorCatalog is not registered", () => {
-      DependencyContainer.clear();
+      CodeHandlerError.registerCatalog(undefined as unknown as StandardCatalog);
 
       expect(() => new CodeHandlerError("VAL001")).toThrowError(
-        "Dependency with key 'ErrorCatalog' is not registered",
+        "The error catalog must be set before creating an instance of CodeHandlerError.",
       );
+    });
+  });
+
+  describe("Inheritance", () => {
+    it("should create an error with a class that extends from other class", () => {
+      // Arrange
+      class TestError extends CodeHandlerError {
+        /* empty */
+      }
+
+      TestError.registerCatalog(catalog);
+
+      const error = new TestError("VAL001");
+
+      // Assert
+      expect(error.message).toBe("Test error");
+      expect(error.name).toBe("TestError");
+      expect(error.code).toBe("VAL001");
+      expect(error.severity).toBe(ErrorSeverity.CRITICAL);
+      expect(error.metadata).toBeUndefined();
+      expect(error.cause).toBeUndefined();
+    });
+
+    it("should throw when ErrorCatalog is not registered", () => {
+      // Arrange
+      class TestError extends CodeHandlerError {
+        /* empty */
+      }
+
+      // Assert
+      expect(() => new TestError("VAL001")).toThrowError(
+        "The error catalog must be set before creating an instance of CodeHandlerError.",
+      );
+    });
+
+    it("should create an error with a class without catalog registered that extends from other class", () => {
+      // Arrange
+      class TestError extends CodeHandlerError {
+        /* empty */
+      }
+      class TestError2 extends TestError {
+        /* empty */
+      }
+
+      TestError.registerCatalog(catalog);
+
+      const error = new TestError2("VAL001");
+
+      // Assert
+      expect(error.message).toBe("Test error");
+      expect(error.name).toBe("TestError2");
+      expect(error.code).toBe("VAL001");
+      expect(error.severity).toBe(ErrorSeverity.CRITICAL);
+      expect(error.metadata).toBeUndefined();
+      expect(error.cause).toBeUndefined();
     });
   });
 });

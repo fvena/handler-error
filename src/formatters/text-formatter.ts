@@ -1,40 +1,32 @@
 import type { HandlerError } from "../handler-error";
-import type { FormatterOptions } from "../types/error-formatter.types";
 import { ErrorFormatter } from "../modules/error-formatter";
-import { isHandlerError } from "../guards/handler-error.guard";
 
-export interface TextFormatterOptions extends FormatterOptions {
+export interface TextFormatterOptions {
   showMetadata: boolean;
   showTimestamp: boolean;
 }
 /**
  * Simple text formatter
  */
-export class TextFormatter extends ErrorFormatter<TextFormatterOptions> {
-  private defaultOptions: TextFormatterOptions = {
+export class TextFormatter extends ErrorFormatter {
+  private options: TextFormatterOptions = {
     showMetadata: true,
     showTimestamp: true,
   };
 
-  constructor(options?: Partial<TextFormatterOptions>) {
-    super();
-    this.defaultOptions = { ...this.defaultOptions, ...options };
+  constructor(error: HandlerError, options?: Partial<TextFormatterOptions>) {
+    super(error);
+    this.options = { ...this.options, ...options };
   }
 
-  format(error: HandlerError, options?: Partial<TextFormatterOptions>): string {
-    if (!isHandlerError(error)) {
-      throw new Error("Error must be an instance of HandlerError");
-    }
-
-    const customOptions = { ...this.defaultOptions, ...options };
-
+  private formatError(error: HandlerError, options: TextFormatterOptions): string {
     let result = `${error.name}: ${error.message}`;
 
-    if (customOptions.showTimestamp) {
+    if (options.showTimestamp) {
       result = `[${error.timestamp.toISOString()}] ${result}`;
     }
 
-    if (customOptions.showMetadata) {
+    if (options.showMetadata) {
       const metadata = error.metadata;
 
       if (metadata && Object.keys(metadata).length > 0) {
@@ -45,19 +37,21 @@ export class TextFormatter extends ErrorFormatter<TextFormatterOptions> {
     return result;
   }
 
-  override formatChain(error: HandlerError, options?: Partial<TextFormatterOptions>): string {
-    if (!isHandlerError(error)) {
-      throw new Error("Error must be an instance of HandlerError");
-    }
+  public format(options?: Partial<TextFormatterOptions>): string {
+    const customOptions = { ...this.options, ...options };
 
-    const customOptions = { ...this.defaultOptions, ...options };
+    return this.formatError(this.error, customOptions);
+  }
 
-    const mapError = (item: HandlerError, index: number) => {
+  public formatChain(options?: Partial<TextFormatterOptions>): string {
+    const customOptions = { ...this.options, ...options };
+
+    const mapError = (error: HandlerError, index: number) => {
       const indent = index === 0 ? "" : "    ".repeat(index - 1);
       const prefix = index === 0 ? "" : `└── `;
-      return `${indent}${prefix}${this.format(item, customOptions)}`;
+      return `${indent}${prefix}${this.formatError(error, customOptions)}`;
     };
 
-    return error.mapChain(mapError).join("\n");
+    return this.error.mapChain(mapError).join("\n");
   }
 }

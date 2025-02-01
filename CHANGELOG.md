@@ -1,20 +1,18 @@
 # [2.7.0](https://github.com/fvena/handler-error/compare/v2.6.0...v2.7.0) (2025-01-28)
 
-
 ### Features
 
-* add ErrorLogger for logging errors ([f876c92](https://github.com/fvena/handler-error/commit/f876c9225f186f70a94f0809673c14ab9f69ca74))
+- add ErrorLogger for logging errors ([f876c92](https://github.com/fvena/handler-error/commit/f876c9225f186f70a94f0809673c14ab9f69ca74))
 
 # [2.6.0](https://github.com/fvena/handler-error/compare/v2.5.0...v2.6.0) (2025-01-28)
 
-
 ### Features
 
-* add ErrorFormatter to display errors ([73592fe](https://github.com/fvena/handler-error/commit/73592fe8ee04f7a68ca5233d60c7efc7ed90ee24))
-* implement AnsiFormatter for error formatting with ANSI colors ([d69cc0d](https://github.com/fvena/handler-error/commit/d69cc0dcb69d72b19a8913e05e8f3974bdc9760f))
-* implement HtmlFormatter for error formatting in HTML ([5bceddf](https://github.com/fvena/handler-error/commit/5bceddfee6064e1fa242e1b7c24a7ce90f6bce0f))
-* implement JsonFormatter for error formatting in JSON ([e323599](https://github.com/fvena/handler-error/commit/e323599d8029003ce1cac9c05b9a0109a8e18bb4))
-* implement TextFormatter for error formatting ([1823957](https://github.com/fvena/handler-error/commit/18239574d5a6c6000a78727d5c11021472469220))
+- add ErrorFormatter to display errors ([73592fe](https://github.com/fvena/handler-error/commit/73592fe8ee04f7a68ca5233d60c7efc7ed90ee24))
+- implement AnsiFormatter for error formatting with ANSI colors ([d69cc0d](https://github.com/fvena/handler-error/commit/d69cc0dcb69d72b19a8913e05e8f3974bdc9760f))
+- implement HtmlFormatter for error formatting in HTML ([5bceddf](https://github.com/fvena/handler-error/commit/5bceddfee6064e1fa242e1b7c24a7ce90f6bce0f))
+- implement JsonFormatter for error formatting in JSON ([e323599](https://github.com/fvena/handler-error/commit/e323599d8029003ce1cac9c05b9a0109a8e18bb4))
+- implement TextFormatter for error formatting ([1823957](https://github.com/fvena/handler-error/commit/18239574d5a6c6000a78727d5c11021472469220))
 
 # [2.5.0](https://github.com/fvena/handler-error/compare/v2.4.0...v2.5.0) (2025-01-27)
 

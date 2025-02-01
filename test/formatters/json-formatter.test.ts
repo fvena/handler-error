@@ -7,14 +7,14 @@ describe("JsonFormatter", () => {
     it("should format error with JSON", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new JsonFormatter({
+      const formatter = new JsonFormatter(error, {
         showMetadata: false,
         showStackTrace: false,
         showTimestamp: false,
       });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       const errorData = {
@@ -28,14 +28,14 @@ describe("JsonFormatter", () => {
     it("should format error with JSON with timestamp", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new JsonFormatter({
+      const formatter = new JsonFormatter(error, {
         showMetadata: false,
         showStackTrace: false,
         showTimestamp: true,
       });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       const errorData = {
@@ -50,14 +50,14 @@ describe("JsonFormatter", () => {
     it("should format error with JSON with metadata", () => {
       // Arrange
       const error = new HandlerError("Test error", { key: "value" });
-      const formatter = new JsonFormatter({
+      const formatter = new JsonFormatter(error, {
         showMetadata: true,
         showStackTrace: false,
         showTimestamp: false,
       });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       /* eslint-disable perfectionist/sort-objects -- Allow unsorted object properties */
@@ -77,14 +77,14 @@ describe("JsonFormatter", () => {
     it("should format error with JSON with stack trace", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new JsonFormatter({
+      const formatter = new JsonFormatter(error, {
         showMetadata: false,
         showStackTrace: true,
         showTimestamp: false,
       });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       const errorData = {
@@ -102,14 +102,14 @@ describe("JsonFormatter", () => {
       // Arrange
       const error1 = new HandlerError("Test error 1");
       const error2 = new HandlerError("Test error 2", error1);
-      const formatter = new JsonFormatter({
+      const formatter = new JsonFormatter(error2, {
         showMetadata: false,
         showStackTrace: false,
         showTimestamp: false,
       });
 
       // Act
-      const formatted = formatter.formatChain(error2);
+      const formatted = formatter.formatChain();
 
       // Assert
       const errorData = [
@@ -130,14 +130,14 @@ describe("JsonFormatter", () => {
       // Arrange
       const error1 = new HandlerError("Test error 1");
       const error2 = new HandlerError("Test error 2", error1);
-      const formatter = new JsonFormatter({
+      const formatter = new JsonFormatter(error2, {
         showMetadata: false,
         showStackTrace: false,
         showTimestamp: true,
       });
 
       // Act
-      const formatted = formatter.formatChain(error2);
+      const formatted = formatter.formatChain();
 
       // Assert
       const errorData = [
@@ -160,14 +160,14 @@ describe("JsonFormatter", () => {
       // Arrange
       const error1 = new HandlerError("Test error 1", { key: "value" });
       const error2 = new HandlerError("Test error 2", { key: "value" }, error1);
-      const formatter = new JsonFormatter({
+      const formatter = new JsonFormatter(error2, {
         showMetadata: true,
         showStackTrace: false,
         showTimestamp: false,
       });
 
       // Act
-      const formatted = formatter.formatChain(error2);
+      const formatted = formatter.formatChain();
 
       // Assert
       /* eslint-disable perfectionist/sort-objects -- Allow unsorted object properties */
@@ -197,14 +197,14 @@ describe("JsonFormatter", () => {
       // Arrange
       const error1 = new HandlerError("Test error 1");
       const error2 = new HandlerError("Test error 2", error1);
-      const formatter = new JsonFormatter({
+      const formatter = new JsonFormatter(error2, {
         showMetadata: false,
         showStackTrace: true,
         showTimestamp: false,
       });
 
       // Act
-      const formatted = formatter.formatChain(error2);
+      const formatted = formatter.formatChain();
 
       // Assert
       const errorData = [

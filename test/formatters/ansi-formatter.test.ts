@@ -5,13 +5,13 @@ import { colors, formats } from "../../src/formatters/constants";
 
 describe("AnsiFormatter", () => {
   describe("format", () => {
-    it("should format error with ANSI colors", () => {
+    it("should format error", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new AnsiFormatter();
+      const formatter = new AnsiFormatter(error);
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toBe(
@@ -19,25 +19,13 @@ describe("AnsiFormatter", () => {
       );
     });
 
-    it("should format error without ANSI colors", () => {
+    it("should format error with timestamp", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new AnsiFormatter({ colors: false });
+      const formatter = new AnsiFormatter(error, { showTimestamp: true });
 
       // Act
-      const formatted = formatter.format(error);
-
-      // Assert
-      expect(formatted).toBe(`HandlerError: Test error`);
-    });
-
-    it("should format error with ANSI colors with timestamp", () => {
-      // Arrange
-      const error = new HandlerError("Test error");
-      const formatter = new AnsiFormatter({ showTimestamp: true });
-
-      // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toBe(
@@ -45,13 +33,13 @@ describe("AnsiFormatter", () => {
       );
     });
 
-    it("should format error with ANSI colors with metadata", () => {
+    it("should format error with metadata", () => {
       // Arrange
       const error = new HandlerError("Test error", { key: "value" });
-      const formatter = new AnsiFormatter({ showMetadata: true });
+      const formatter = new AnsiFormatter(error, { showMetadata: true });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toBe(
@@ -59,13 +47,13 @@ describe("AnsiFormatter", () => {
       );
     });
 
-    it("should format error with ANSI colors with all options", () => {
+    it("should format error with all options", () => {
       // Arrange
       const error = new HandlerError("Test error", { key: "value" });
-      const formatter = new AnsiFormatter({ showMetadata: true, showTimestamp: true });
+      const formatter = new AnsiFormatter(error, { showMetadata: true, showTimestamp: true });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toBe(
@@ -75,15 +63,16 @@ describe("AnsiFormatter", () => {
   });
 
   describe("formatChain", () => {
-    it("should format error chain with ANSI colors", () => {
+    const rootError = new HandlerError("Root error");
+    const middleError = new HandlerError("Middle error", rootError);
+    const topError = new HandlerError("Top error", middleError);
+
+    it("should format error chain", () => {
       // Arrange
-      const rootError = new HandlerError("Root error");
-      const middleError = new HandlerError("Middle error", rootError);
-      const topError = new HandlerError("Top error", middleError);
-      const formatter = new AnsiFormatter();
+      const formatter = new AnsiFormatter(topError);
 
       // Act
-      const formatted = formatter.formatChain(topError);
+      const formatted = formatter.formatChain();
 
       // Assert
       expect(formatted).toBe(
@@ -95,35 +84,12 @@ describe("AnsiFormatter", () => {
       );
     });
 
-    it("should format error chain without ANSI colors", () => {
+    it("should format error chain with timestamp", () => {
       // Arrange
-      const rootError = new HandlerError("Root error");
-      const middleError = new HandlerError("Middle error", rootError);
-      const topError = new HandlerError("Top error", middleError);
-      const formatter = new AnsiFormatter({ colors: false });
+      const formatter = new AnsiFormatter(topError, { showTimestamp: true });
 
       // Act
-      const formatted = formatter.formatChain(topError);
-
-      // Assert
-      expect(formatted).toBe(
-        [
-          `HandlerError: Top error`,
-          `└── HandlerError: Middle error`,
-          `    └── HandlerError: Root error`,
-        ].join("\n"),
-      );
-    });
-
-    it("should format error chain with ANSI colors with timestamp", () => {
-      // Arrange
-      const rootError = new HandlerError("Root error");
-      const middleError = new HandlerError("Middle error", rootError);
-      const topError = new HandlerError("Top error", middleError);
-      const formatter = new AnsiFormatter({ showTimestamp: true });
-
-      // Act
-      const formatted = formatter.formatChain(topError);
+      const formatted = formatter.formatChain();
 
       // Assert
       expect(formatted).toBe(

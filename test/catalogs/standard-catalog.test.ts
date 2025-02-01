@@ -1,7 +1,7 @@
 import type { Catalog } from "../../src/types/error-catalog.types";
 import { describe, expect, it } from "vitest";
 import { ErrorSeverity } from "../../src/constants";
-import { ErrorCatalog } from "../../src/modules/error-catalog";
+import { StandardCatalog } from "../../src/catalogs/standard-catalog";
 
 const catalog: Catalog = {
   VAL001: { message: "Test error", severity: ErrorSeverity.CRITICAL },
@@ -10,10 +10,10 @@ const catalog: Catalog = {
   VAL004: { message: "Test debug", severity: ErrorSeverity.DEBUG },
 };
 
-describe("ErrorCatalog", () => {
+describe("StandardCatalog", () => {
   it("should return an entry from the catalog", () => {
     // Arrange
-    const errorCatalog = new ErrorCatalog(catalog);
+    const errorCatalog = new StandardCatalog(catalog);
 
     // Act
     const error = errorCatalog.getEntry("VAL001");
@@ -25,7 +25,7 @@ describe("ErrorCatalog", () => {
 
   it("should throw error if an code is not found", () => {
     // Arrange
-    const errorCatalog = new ErrorCatalog(catalog);
+    const errorCatalog = new StandardCatalog(catalog);
 
     // Act
     const error = () => errorCatalog.getEntry("VAL005");
@@ -40,7 +40,7 @@ describe("ErrorCatalog", () => {
       VAL001: { data: { key: "value" }, message: "Test error", severity: ErrorSeverity.CRITICAL },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     // Act
     const error = errorCatalog.getEntry("VAL001");
@@ -52,14 +52,14 @@ describe("ErrorCatalog", () => {
   });
 });
 
-describe("ErrorCatalog.formatMessage", () => {
+describe("StandardCatalog.formatMessage", () => {
   it("should format message with metadata", () => {
     // Arrange
     const customCatalog: Catalog = {
       VAL001: { message: "Test error {{ key }}", severity: ErrorSeverity.CRITICAL },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     // Act
     const error = errorCatalog.getEntry("VAL001", { key: "value" });
@@ -75,7 +75,7 @@ describe("ErrorCatalog.formatMessage", () => {
       VAL002: { message: "Error without variables", severity: ErrorSeverity.ERROR },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     // Act
     const error = errorCatalog.getEntry("VAL002");
@@ -91,7 +91,7 @@ describe("ErrorCatalog.formatMessage", () => {
       VAL004: { message: "Missing placeholder {{ otherKey }}", severity: ErrorSeverity.INFO },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     // Act & Assert
     expect(() => errorCatalog.getEntry("VAL004", { key: "value" })).toThrowError(
@@ -105,7 +105,7 @@ describe("ErrorCatalog.formatMessage", () => {
       VAL005: { message: "Invalid metadata {{ key }}", severity: ErrorSeverity.CRITICAL },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     // Act & Assert
     expect(() => errorCatalog.getEntry("VAL005", { key: { nested: "object" } })).toThrowError(
@@ -122,7 +122,7 @@ describe("ErrorCatalog.formatMessage", () => {
       },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     // Act
     const error = errorCatalog.getEntry("VAL006", { key1: "value1", key2: "value2" });
@@ -137,7 +137,7 @@ describe("ErrorCatalog.formatMessage", () => {
       VAL007: { message: "Error with one placeholder: {{ key }}", severity: ErrorSeverity.ERROR },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     // Act
     const error = errorCatalog.getEntry("VAL007", { extraKey: "extraValue", key: "value" });
@@ -147,7 +147,7 @@ describe("ErrorCatalog.formatMessage", () => {
     expect(error.severity).toBe(ErrorSeverity.ERROR);
   });
 
-  it("should not replace invalid or malformatted placeholders", () => {
+  it("should not replace invalid or malformed placeholders", () => {
     // Arrange
     const customCatalog: Catalog = {
       VAL008: {
@@ -156,7 +156,7 @@ describe("ErrorCatalog.formatMessage", () => {
       },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     // Act
     const error = errorCatalog.getEntry("VAL008", { "another key": "anotherValue", key: "value" });
@@ -173,7 +173,7 @@ describe("ErrorCatalog.formatMessage", () => {
       },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     expect(() => errorCatalog.getEntry("VAL009", { a: "value" })).toThrowError(
       "Too many replacements in message template",
@@ -188,7 +188,7 @@ describe("ErrorCatalog.formatMessage", () => {
       },
     };
 
-    const errorCatalog = new ErrorCatalog(customCatalog);
+    const errorCatalog = new StandardCatalog(customCatalog);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- Testing invalid metadata
     expect(() => errorCatalog.getEntry("VAL010", "invalid" as any)).toThrowError(

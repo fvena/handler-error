@@ -1,6 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HandlerError } from "../src/handler-error";
 import { ErrorSeverity } from "../src/constants";
+import { ErrorFormatter } from "../src/modules/error-formatter";
+import { ErrorLogger } from "../src/modules/error-logger";
+
+const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {
+  /* empty */
+});
 
 describe("HandlerError", () => {
   describe("constructor", () => {
@@ -366,6 +372,83 @@ describe("HandlerError", () => {
 
       // Assert
       expect(errorString).toBe(`[ERROR VAL001] HandlerError: Test error`);
+    });
+  });
+
+  describe("Formatters", () => {
+    // Formatter and Logger class definitions...
+    class TextFormatter extends ErrorFormatter {
+      format(): string {
+        return `TextFormatter: ${this.error.message}`;
+      }
+    }
+
+    class HTMLFormatter extends ErrorFormatter {
+      format(): string {
+        return `<div>HTMLFormatter: ${this.error.message}</div>`;
+      }
+    }
+
+    class ConsoleLogger extends ErrorLogger {
+      log(): void {
+        console.error(`ConsoleLogger: ${this.error.message}`);
+      }
+    }
+
+    class FileLogger extends ErrorLogger {
+      log(): void {
+        console.error(`FileLogger: ${this.error.message}(saved to file)`);
+      }
+    }
+
+    const loggerClasses = {
+      console: ConsoleLogger,
+      file: FileLogger,
+    } as const;
+
+    const formatterClasses = {
+      html: HTMLFormatter,
+      text: TextFormatter,
+    } as const;
+
+    type Formatters<T extends Record<string, new (error: HandlerError) => ErrorFormatter>> = Record<
+      keyof T,
+      ErrorFormatter
+    >;
+
+    type Loggers<T extends Record<string, new (error: HandlerError) => ErrorLogger>> = Record<
+      keyof T,
+      ErrorLogger
+    >;
+
+    class EnhancedHandlerError extends HandlerError {
+      declare public formatters: Formatters<typeof formatterClasses>;
+      declare public loggers: Loggers<typeof loggerClasses>;
+    }
+
+    class EnhancedHandlerErrorChild extends EnhancedHandlerError {
+      /* Empty */
+    }
+
+    beforeEach(() => {
+      EnhancedHandlerError.registerLoggers(loggerClasses).registerFormatters(formatterClasses);
+    });
+
+    it("should register and use formatters", () => {
+      const error = new EnhancedHandlerError("Test error");
+      expect(error.formatters.html.format()).toBe("<div>HTMLFormatter: Test error</div>");
+      expect(error.formatters.text.format()).toBe("TextFormatter: Test error");
+    });
+
+    it("should register and use loggers", () => {
+      const error = new EnhancedHandlerError("Test error");
+      error.loggers.file.log();
+      expect(errorSpy).toHaveBeenCalledWith("FileLogger: Test error(saved to file)");
+    });
+
+    it("should inherit formatters in child classes", () => {
+      const errorChild = new EnhancedHandlerErrorChild("Test error");
+      expect(errorChild.formatters.text.format()).toBe("TextFormatter: Test error");
     });
   });
 });

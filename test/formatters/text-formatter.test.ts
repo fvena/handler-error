@@ -7,10 +7,10 @@ describe("TextFormatter", () => {
     it("should format error with text", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new TextFormatter({ showMetadata: false, showTimestamp: false });
+      const formatter = new TextFormatter(error, { showMetadata: false, showTimestamp: false });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toBe(`HandlerError: Test error`);
@@ -19,10 +19,10 @@ describe("TextFormatter", () => {
     it("should format error with text with timestamp", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new TextFormatter({ showMetadata: false, showTimestamp: true });
+      const formatter = new TextFormatter(error, { showMetadata: false, showTimestamp: true });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toBe(`[${error.timestamp.toISOString()}] HandlerError: Test error`);
@@ -31,10 +31,10 @@ describe("TextFormatter", () => {
     it("should format error with text with metadata", () => {
       // Arrange
       const error = new HandlerError("Test error", { key: "value" });
-      const formatter = new TextFormatter({ showMetadata: true, showTimestamp: false });
+      const formatter = new TextFormatter(error, { showMetadata: true, showTimestamp: false });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toBe(`HandlerError: Test error\nMetadata: {"key":"value"}`);
@@ -43,10 +43,10 @@ describe("TextFormatter", () => {
     it("should format error with text with all options", () => {
       // Arrange
       const error = new HandlerError("Test error", { key: "value" });
-      const formatter = new TextFormatter({ showMetadata: true, showTimestamp: true });
+      const formatter = new TextFormatter(error, { showMetadata: true, showTimestamp: true });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toContain(
@@ -61,10 +61,10 @@ describe("TextFormatter", () => {
       const rootError = new HandlerError("Root error");
       const middleError = new HandlerError("Middle error", rootError);
       const topError = new HandlerError("Top error", middleError);
-      const formatter = new TextFormatter({ showMetadata: false, showTimestamp: false });
+      const formatter = new TextFormatter(topError, { showMetadata: false, showTimestamp: false });
 
       // Act
-      const formatted = formatter.formatChain(topError);
+      const formatted = formatter.formatChain();
 
       // Assert
       expect(formatted).toBe(
@@ -81,10 +81,10 @@ describe("TextFormatter", () => {
       const rootError = new HandlerError("Root error");
       const middleError = new HandlerError("Middle error", rootError);
       const topError = new HandlerError("Top error", middleError);
-      const formatter = new TextFormatter({ showMetadata: false, showTimestamp: true });
+      const formatter = new TextFormatter(topError, { showMetadata: false, showTimestamp: true });
 
       // Act
-      const formatted = formatter.formatChain(topError);
+      const formatted = formatter.formatChain();
 
       // Assert
       expect(formatted).toBe(
@@ -101,10 +101,10 @@ describe("TextFormatter", () => {
       const rootError = new HandlerError("Root error", { key: "value" });
       const middleError = new HandlerError("Middle error", { key: "value" }, rootError);
       const topError = new HandlerError("Top error", { key: "value" }, middleError);
-      const formatter = new TextFormatter({ showMetadata: true, showTimestamp: false });
+      const formatter = new TextFormatter(topError, { showMetadata: true, showTimestamp: false });
 
       // Act
-      const formatted = formatter.formatChain(topError);
+      const formatted = formatter.formatChain();
 
       // Assert
       expect(formatted).toBe(
@@ -121,10 +121,10 @@ describe("TextFormatter", () => {
       const rootError = new HandlerError("Root error", { key: "value" });
       const middleError = new HandlerError("Middle error", { key: "value" }, rootError);
       const topError = new HandlerError("Top error", { key: "value" }, middleError);
-      const formatter = new TextFormatter({ showMetadata: true, showTimestamp: true });
+      const formatter = new TextFormatter(topError, { showMetadata: true, showTimestamp: true });
 
       // Act
-      const formatted = formatter.formatChain(topError);
+      const formatted = formatter.formatChain();
 
       // Assert
       expect(formatted).toBe(

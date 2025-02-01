@@ -4,13 +4,13 @@ import { HtmlFormatter } from "../../src/formatters/html-formatter";
 
 describe("HtmlFormatter", () => {
   describe("format", () => {
-    it("should format error with HTML tags", () => {
+    it("should format error", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new HtmlFormatter({ showTimestamp: false });
+      const formatter = new HtmlFormatter(error, { showTimestamp: false });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toContain('<div class="error handlerError">');
@@ -21,13 +21,13 @@ describe("HtmlFormatter", () => {
       );
     });
 
-    it("should format error with HTML tags with timestamp", () => {
+    it("should format error with timestamp", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new HtmlFormatter({ showTimestamp: true });
+      const formatter = new HtmlFormatter(error, { showTimestamp: true });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toContain(
@@ -35,13 +35,13 @@ describe("HtmlFormatter", () => {
       );
     });
 
-    it("should format error with HTML tags with metadata", () => {
+    it("should format error with metadata", () => {
       // Arrange
       const error = new HandlerError("Test error", { key: "value" });
-      const formatter = new HtmlFormatter({ showMetadata: true });
+      const formatter = new HtmlFormatter(error, { showMetadata: true });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toContain(
@@ -49,13 +49,13 @@ describe("HtmlFormatter", () => {
       );
     });
 
-    it("should format error with HTML tags with stack trace", () => {
+    it("should format error with stack trace", () => {
       // Arrange
       const error = new HandlerError("Test error");
-      const formatter = new HtmlFormatter({ showStackTrace: true });
+      const formatter = new HtmlFormatter(error, { showStackTrace: true });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toContain('<pre class="error-stack">HandlerError: Test error');
@@ -66,10 +66,10 @@ describe("HtmlFormatter", () => {
       const error = new HandlerError("<script>alert('XSS')</script>", {
         key: "<script>alert('XSS')</script>",
       });
-      const formatter = new HtmlFormatter({ showMetadata: true, showTimestamp: false });
+      const formatter = new HtmlFormatter(error, { showMetadata: true, showTimestamp: false });
 
       // Act
-      const formatted = formatter.format(error);
+      const formatted = formatter.format();
 
       // Assert
       expect(formatted).toContain(
@@ -82,23 +82,24 @@ describe("HtmlFormatter", () => {
   });
 
   describe("formatChain", () => {
-    it("should format error chain with HTML tags", () => {
+    it("should format error chain", () => {
       // Arrange
-      const error1 = new HandlerError("Test error 1");
-      const error2 = new HandlerError("Test error 2", error1);
-      const error3 = new HandlerError("Test error 3", error2);
-      const formatter = new HtmlFormatter({ showTimestamp: false });
+      const rootError = new HandlerError("Root error");
+      const middleError = new HandlerError("Middle error", rootError);
+      const topError = new HandlerError("Top error", middleError);
+
+      const formatter = new HtmlFormatter(topError, { showTimestamp: false });
 
       // Act
-      const formatted = formatter.formatChain(error3);
+      const formatted = formatter.formatChain();
 
       // Assert
       expect(formatted).toContain('<div class="error-chain">');
       expect(formatted).toContain('<div class="error handlerError">');
       expect(formatted).toContain('<h3 class="error-title">HandlerError</h3>');
-      expect(formatted).toContain('<p class="error-message">Test error 1</p>');
-      expect(formatted).toContain('<p class="error-message">Test error 2</p>');
-      expect(formatted).toContain('<p class="error-message">Test error 3</p>');
+      expect(formatted).toContain('<p class="error-message">Top error</p>');
+      expect(formatted).toContain('<p class="error-message">Middle error</p>');
+      expect(formatted).toContain('<p class="error-message">Root error</p>');
     });
   });
 });

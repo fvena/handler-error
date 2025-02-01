@@ -11,4 +11,6 @@ export * from "./types";
 export * from "./guards";
 export * from "./modules";
 export * from "./formatters";
+export * from "./loggers";
+export * from "./catalogs";
 /* eslint-enable */

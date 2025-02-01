@@ -1,11 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { HandlerError } from "../../src/handler-error";
-import { ErrorLogger } from "../../src/modules/error-logger";
-import { ErrorFormatter } from "../../src";
+import { ErrorFormatter } from "../../src/modules/error-formatter";
+import { ConsoleLogger } from "../../src/loggers/console-logger";
 
-const logSpy = vi.spyOn(console, "log").mockImplementation(() => {
-  /* empty */
-});
 const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {
   /* empty */
 });
@@ -23,11 +20,10 @@ describe("ErrorLogger", () => {
   it("should log an error", () => {
     // Arrange
     const error = new HandlerError("Test error");
-
-    const logger = new ErrorLogger();
+    const logger = new ConsoleLogger(error);
 
     // Act
-    logger.log(error);
+    logger.log();
 
     // Assert
     expect(errorSpy).toHaveBeenCalledWith("[ERROR] HandlerError: Test error");
@@ -36,11 +32,10 @@ describe("ErrorLogger", () => {
   it("should log a debug error", () => {
     // Arrange
     const error = new HandlerError.debug("Test error");
-
-    const logger = new ErrorLogger();
+    const logger = new ConsoleLogger(error);
 
     // Act
-    logger.log(error);
+    logger.log();
 
     // Assert
     expect(debugSpy).toHaveBeenCalledWith("[DEBUG] DebugHandlerError: Test error");
@@ -49,11 +44,10 @@ describe("ErrorLogger", () => {
   it("should log an info error", () => {
     // Arrange
     const error = new HandlerError.info("Test error");
-
-    const logger = new ErrorLogger();
+    const logger = new ConsoleLogger(error);
 
     // Act
-    logger.log(error);
+    logger.log();
 
     // Assert
     expect(infoSpy).toHaveBeenCalledWith("[INFO] InfoHandlerError: Test error");
@@ -62,11 +56,10 @@ describe("ErrorLogger", () => {
   it("should log a warning error", () => {
     // Arrange
     const error = new HandlerError.warning("Test error");
-
-    const logger = new ErrorLogger();
+    const logger = new ConsoleLogger(error);
 
     // Act
-    logger.log(error);
+    logger.log();
 
     // Assert
     expect(warnSpy).toHaveBeenCalledWith("[WARNING] WarningHandlerError: Test error");
@@ -75,11 +68,10 @@ describe("ErrorLogger", () => {
   it("should log a critical error", () => {
     // Arrange
     const error = new HandlerError.critical("Test error");
-
-    const logger = new ErrorLogger();
+    const logger = new ConsoleLogger(error);
 
     // Act
-    logger.log(error);
+    logger.log();
 
     // Assert
     expect(errorSpy).toHaveBeenCalledWith("[CRITICAL] CriticalHandlerError: Test error");
@@ -88,11 +80,10 @@ describe("ErrorLogger", () => {
   it("should log an error with a severity higher than the minimum severity", () => {
     // Arrange
     const error = new HandlerError.critical("Test error");
-
-    const logger = new ErrorLogger("error");
+    const logger = new ConsoleLogger(error);
 
     // Act
-    logger.log(error);
+    logger.log();
 
     // Assert
     expect(errorSpy).toHaveBeenCalledWith("[CRITICAL] CriticalHandlerError: Test error");
@@ -101,11 +92,10 @@ describe("ErrorLogger", () => {
   it("should not log an error with a severity lower than the minimum severity", () => {
     // Arrange
     const error = new HandlerError.debug("Test error");
-
-    const logger = new ErrorLogger("error");
+    const logger = new ConsoleLogger(error);
 
     // Act
-    logger.log(error);
+    logger.log();
 
     // Assert
     expect(errorSpy).not.toHaveBeenCalled();
@@ -117,10 +107,9 @@ describe("ErrorLogger", () => {
     const middleError = new HandlerError("Middle error", rootError);
     const topError = new HandlerError("Top error", middleError);
 
-    const logger = new ErrorLogger();
-
     // Act
-    logger.log(topError, true);
+    const logger = new ConsoleLogger(topError);
+    logger.logChain();
 
     // Assert
     expect(errorSpy).toHaveBeenCalledWith(
@@ -134,61 +123,69 @@ describe("ErrorLogger", () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
-  it("should throw an error if the error is not a HandlerError", () => {
-    // Arrange
-    const error = new Error("Test error") as unknown as HandlerError;
-
-    const logger = new ErrorLogger();
-
-    // Act
-    const logError = () => {
-      logger.log(error);
-    };
-
-    // Assert
-    expect(logError).toThrowError(TypeError);
-  });
-
   it("should log an error with a custom formatter", () => {
     // Arrange
     class TestFormatter extends ErrorFormatter {
-      format(error: HandlerError): string {
-        return `TestFormatter: ${error.message}`;
+      format(): string {
+        return `TestFormatter: ${this.error.message}`;
       }
     }
 
-    const formatter = new TestFormatter();
     const error = new HandlerError("Test error");
-    const logger = new ErrorLogger("debug", formatter);
 
     // Act
-    logger.log(error);
+    const logger = new ConsoleLogger(error, { formatter: TestFormatter });
+    logger.log();
 
     // Assert
-    expect(logSpy).toHaveBeenCalledWith("TestFormatter: Test error");
+    expect(errorSpy).toHaveBeenCalledWith("TestFormatter: Test error");
   });
 
   it("should log an error chain with a custom formatter", () => {
     // Arrange
     class TestFormatter extends ErrorFormatter {
-      format(error: HandlerError): string {
-        return `TestFormatter: ${error.message}`;
+      public format(): string {
+        return `TestFormatter: ${this.error.message}`;
+      }
+
+      public formatChain(): string {
+        const chain = this.error.mapChain((error) => `TestFormatter: ${error.message}`);
+        return chain.join("\n");
       }
     }
 
-    const formatter = new TestFormatter();
     const rootError = new HandlerError("Root error");
     const middleError = new HandlerError("Middle error", rootError);
     const topError = new HandlerError("Top error", middleError);
 
-    const logger = new ErrorLogger("debug", formatter);
-
     // Act
-    logger.log(topError, true);
+    const logger = new ConsoleLogger(topError, { formatter: TestFormatter });
+    logger.logChain();
 
     // Assert
-    expect(logSpy).toHaveBeenCalledWith(
+    expect(errorSpy).toHaveBeenCalledWith(
       `TestFormatter: Top error\n` + `TestFormatter: Middle error\n` + `TestFormatter: Root error`,
     );
+  });
+
+  it("should throw an error if the formatter has not formatChain method and logChain is called", () => {
+    // Arrange
+    class TestFormatter extends ErrorFormatter {
+      format(): string {
+        return `TestFormatter: ${this.error.message}`;
+      }
+    }
+
+    const rootError = new HandlerError("Root error");
+    const middleError = new HandlerError("Middle error", rootError);
+    const topError = new HandlerError("Top error", middleError);
+
+    // Act
+    const logger = new ConsoleLogger(topError, { formatter: TestFormatter });
+
+    // Assert
+    expect(() => {
+      logger.logChain();
+    }).toThrowError("Formatter does not support formatChain");
   });
 });

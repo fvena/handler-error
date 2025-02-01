@@ -1,9 +1,7 @@
 import type { HandlerError } from "../handler-error";
-import type { FormatterOptions } from "../types/error-formatter.types";
 import { ErrorFormatter } from "../modules/error-formatter";
-import { isHandlerError } from "../guards/handler-error.guard";
 
-export interface HtmlFormatterOptions extends FormatterOptions {
+export interface HtmlFormatterOptions {
   showMetadata: boolean;
   showStackTrace: boolean;
   showTimestamp: boolean;
@@ -37,42 +35,42 @@ function escapeHTML(input: string): string {
 /**
  * HTML formatter for web display
  */
-export class HtmlFormatter extends ErrorFormatter<HtmlFormatterOptions> {
-  private defaultOptions: HtmlFormatterOptions = {
+export class HtmlFormatter extends ErrorFormatter {
+  private options: HtmlFormatterOptions = {
     showMetadata: true,
     showStackTrace: false,
     showTimestamp: true,
   };
 
-  constructor(options?: Partial<HtmlFormatterOptions>) {
-    super();
-    this.defaultOptions = { ...this.defaultOptions, ...options };
+  constructor(error: HandlerError, options?: Partial<HtmlFormatterOptions>) {
+    super(error);
+    this.options = { ...this.options, ...options };
   }
 
-  format(error: HandlerError, options?: Partial<HtmlFormatterOptions>): string {
-    if (!isHandlerError(error)) {
-      throw new Error("Error must be an instance of HandlerError");
-    }
-
-    const customOptions = { ...this.defaultOptions, ...options };
-
+  private formatError(error: HandlerError, options: HtmlFormatterOptions): string {
     return `
       <div class="error ${lowercaseFirstLetter(error.name)}">
         <h3 class="error-title">${error.name}</h3>
         <p class="error-message">${escapeHTML(error.message)}</p>
-        ${customOptions.showTimestamp ? `<div class="error-timestamp">${error.timestamp.toISOString()}</div>` : ""}
-        ${customOptions.showMetadata && error.metadata ? `<div class="error-metadata"><pre>${escapeHTML(JSON.stringify(error.metadata))}</pre></div>` : ""}
-        ${customOptions.showStackTrace && error.stack ? `<pre class="error-stack">${error.stack}</pre>` : ""}
+        ${options.showTimestamp ? `<div class="error-timestamp">${error.timestamp.toISOString()}</div>` : ""}
+        ${options.showMetadata && error.metadata ? `<div class="error-metadata"><pre>${escapeHTML(JSON.stringify(error.metadata))}</pre></div>` : ""}
+        ${options.showStackTrace && error.stack ? `<pre class="error-stack">${escapeHTML(error.stack)}</pre>` : ""}
       </div>
     `;
   }
 
-  override formatChain(error: HandlerError, options?: Partial<HtmlFormatterOptions>): string {
-    const customOptions = { ...this.defaultOptions, ...options };
+  public format(options?: Partial<HtmlFormatterOptions>): string {
+    const customOptions = { ...this.options, ...options };
 
-    const mapError = (item: HandlerError) => this.format(item, customOptions);
-    const chain = error.mapChain(mapError);
+    return this.formatError(this.error, customOptions);
+  }
 
-    return `<div class="error-chain">${chain.join("\n")}</div>`;
+  public formatChain(options?: Partial<HtmlFormatterOptions>): string {
+    const customOptions = { ...this.options, ...options };
+
+    const mapError = (error: HandlerError) => this.formatError(error, customOptions);
+    const chain = this.error.mapChain(mapError).join("\n");
+
+    return `<div class="error-chain">${chain}</div>`;
   }
 }

@@ -75,7 +75,7 @@ export class ConsoleLogger extends ErrorLogger {
 
   public logChain(options?: Partial<ConsoleLoggerOptions>): void {
     const customOptions = { ...this.options, ...options };
-    let message = this.error.toStringChain();
+    let message = this.error.chain.toString();
 
     if (customOptions.formatter) {
       const formatterOptions = customOptions.formatterOptions;

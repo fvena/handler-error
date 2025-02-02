@@ -54,9 +54,9 @@ export class HtmlFormatter extends ErrorFormatter {
 
   public formatChain(options?: Partial<HtmlFormatterOptions>): string {
     const customOptions = { ...this.options, ...options };
-
     const mapError = (error: HandlerError) => this.formatError(error, customOptions);
-    const chain = this.error.mapChain(mapError).join("\n");
+
+    const chain = this.error.chain.map((error) => mapError(error)).join("\n");
 
     return `<div class="error-chain">${chain}</div>`;
   }

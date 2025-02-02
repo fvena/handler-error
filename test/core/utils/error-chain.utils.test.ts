@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { HandlerError } from "../../src/core/handler-error";
-import { ErrorChain } from "../../src/core/error-chain";
-import { ErrorSeverity } from "../../src/core/constants";
+import { HandlerError } from "../../../src/core/handler-error";
+import { ErrorChainUtils } from "../../../src/core/utils/error-chain.utils";
+import { ErrorSeverity } from "../../../src/core/constants";
 
-describe("ErrorChain", () => {
-  describe("getErrorChain", () => {
+describe("ErrorChainUtils", () => {
+  describe("getErrorsChain", () => {
     it("should get the error chain", () => {
       // Arrange
       const rootError = new Error("Root error");
@@ -12,7 +12,7 @@ describe("ErrorChain", () => {
       const topError = new HandlerError("Top error", middleError);
 
       // Act
-      const chain = ErrorChain.getErrorChain(topError);
+      const chain = ErrorChainUtils.getErrorsChain(topError);
 
       // Assert
       expect(chain).toHaveLength(3);
@@ -32,7 +32,7 @@ describe("ErrorChain", () => {
       rootError = new HandlerError("Root error", topError);
 
       // Act
-      const chain = ErrorChain.getErrorChain(topError);
+      const chain = ErrorChainUtils.getErrorsChain(topError);
 
       // Assert
       expect(chain).toHaveLength(2);
@@ -49,7 +49,7 @@ describe("ErrorChain", () => {
       const topError = new HandlerError("Top error", middleError);
 
       // Act
-      const rootCause = ErrorChain.getRootCause(topError);
+      const rootCause = ErrorChainUtils.getRootCause(topError);
 
       // Assert
       expect(rootCause.message).toBe("Root error");
@@ -60,7 +60,7 @@ describe("ErrorChain", () => {
       const error = new HandlerError("Test error");
 
       // Act
-      const rootCause = ErrorChain.getRootCause(error);
+      const rootCause = ErrorChainUtils.getRootCause(error);
 
       // Assert
       expect(rootCause.message).toBe("Test error");
@@ -75,7 +75,7 @@ describe("ErrorChain", () => {
       const topError = new HandlerError("Top error", middleError);
 
       // Act
-      const chain = ErrorChain.mapErrors(topError, (error) => error.message);
+      const chain = ErrorChainUtils.mapErrors(topError, (error) => error.message);
 
       // Assert
       expect(chain).toEqual(["Top error", "Middle error", "Root error"]);
@@ -90,7 +90,7 @@ describe("ErrorChain", () => {
       const topError = new HandlerError.debug("Top error", middleError);
 
       // Act
-      const maxSeverity = ErrorChain.findMostSevere(topError);
+      const maxSeverity = ErrorChainUtils.findMostSevere(topError);
 
       // Assert
       expect(maxSeverity.message).toBe("Root error");
@@ -101,7 +101,7 @@ describe("ErrorChain", () => {
       const error = new HandlerError("Test error");
 
       // Act
-      const maxSeverity = ErrorChain.findMostSevere(error);
+      const maxSeverity = ErrorChainUtils.findMostSevere(error);
 
       // Assert
       expect(maxSeverity.message).toBe("Test error");
@@ -114,7 +114,7 @@ describe("ErrorChain", () => {
       const topError = new HandlerError.error("Top error", middleError);
 
       // Act
-      const maxSeverity = ErrorChain.findMostSevere(topError);
+      const maxSeverity = ErrorChainUtils.findMostSevere(topError);
 
       // Assert
       expect(maxSeverity.message).toBe("Top error");
@@ -129,7 +129,7 @@ describe("ErrorChain", () => {
       const criticalError = new HandlerError.critical("Critical error", errorError);
 
       // Act
-      const maxSeverity = ErrorChain.findMostSevere(criticalError);
+      const maxSeverity = ErrorChainUtils.findMostSevere(criticalError);
 
       // Assert
       expect(maxSeverity.message).toBe("Critical error");
@@ -144,7 +144,7 @@ describe("ErrorChain", () => {
       const topError = new HandlerError("Top error", middleError);
 
       // Act
-      const serializedChain = ErrorChain.serialize(topError);
+      const serializedChain = ErrorChainUtils.chainSerialize(topError);
 
       // Assert
       expect(serializedChain).toStrictEqual([
@@ -182,7 +182,7 @@ describe("ErrorChain", () => {
       const topError = new HandlerError("Top error", metadata, rootError);
 
       // Act
-      const serializedChain = ErrorChain.serialize(topError);
+      const serializedChain = ErrorChainUtils.chainSerialize(topError);
 
       // Assert
       expect(serializedChain).toStrictEqual([
@@ -212,7 +212,7 @@ describe("ErrorChain", () => {
       const topError = new HandlerError("Top error", middleError);
 
       // Act
-      const serializedChain = ErrorChain.toString(topError);
+      const serializedChain = ErrorChainUtils.chainToString(topError);
 
       // Assert
       expect(serializedChain).toBe(
@@ -229,7 +229,7 @@ describe("ErrorChain", () => {
       const topError = new HandlerError.critical("Top error", middleError);
 
       // Act
-      const serializedChain = ErrorChain.toString(topError);
+      const serializedChain = ErrorChainUtils.chainToString(topError);
 
       // Assert
       expect(serializedChain).toBe(

@@ -1,11 +1,11 @@
-import type { Metadata, Severity } from "./types/handler-error.types";
-import type { SerializedError, SerializedErrorChain } from "./types/serialize.types";
+import type { HandlerErrorChainAPI, Metadata, Severity } from "./types/handler-error.types";
+import type { SerializedError } from "./types/serialize.types";
 import type { ErrorFormatter } from "../modules/formatters/base-formatter";
 import type { ErrorLogger } from "../modules/loggers/base-logger";
 import { randomUUID } from "node:crypto";
-import { ErrorChain } from "./error-chain";
 import { ErrorSeverity } from "./constants";
 import { processArguments } from "./utils/process-arguments.utils";
+import { ErrorChainUtils } from "./utils/error-chain.utils";
 
 type FeatureMap<T> = Record<string, new (error: HandlerError) => T>;
 
@@ -112,43 +112,16 @@ export class HandlerError extends Error {
     return this;
   }
 
-  /**
-   * Retrieves the chain of errors starting from the root error.
-   */
-  public getChain(): HandlerError[] {
-    return ErrorChain.getErrorChain(this);
-  }
-
-  /**
-   * Retrieves the root error of the chain, which is the deepest error in the hierarchy.
-   */
-  public getChainRoot(): HandlerError {
-    return ErrorChain.getRootCause(this);
-  }
-
-  /**
-   * Applies a mapper function to each error in the chain and returns the resulting array.
-   */
-  public mapChain<T>(mapper: (error: HandlerError, index: number) => T): T[] {
-    return ErrorChain.mapErrors(this, mapper);
-  }
-
-  /**
-   * Retrieves the error with the highest severity in the chain.
-   */
-  public findMostSevereInChain(): HandlerError {
-    return ErrorChain.findMostSevere(this);
-  }
-
-  /**
-   * Serializes the chain of errors into an array of plain objects.
-   */
-  public serializeChain(): SerializedErrorChain[] {
-    return ErrorChain.serialize(this);
-  }
-
-  public toStringChain(): string {
-    return ErrorChain.toString(this);
+  public get chain(): HandlerErrorChainAPI {
+    return {
+      get: () => ErrorChainUtils.getErrorsChain(this),
+      map: <T>(mapper: (error: HandlerError, index: number) => T) =>
+        ErrorChainUtils.mapErrors(this, mapper),
+      mostSevere: () => ErrorChainUtils.findMostSevere(this),
+      root: () => ErrorChainUtils.getRootCause(this),
+      serialize: () => ErrorChainUtils.chainSerialize(this),
+      toString: () => ErrorChainUtils.chainToString(this),
+    };
   }
 
   /**

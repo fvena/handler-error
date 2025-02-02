@@ -126,6 +126,6 @@ export class AnsiFormatter extends ErrorFormatter {
       return `${indent}${prefix}${this.formatError(error, customOptions)}`;
     };
 
-    return this.error.mapChain(mapError).join("\n");
+    return this.error.chain.map((error, index) => mapError(error, index)).join("\n");
   }
 }

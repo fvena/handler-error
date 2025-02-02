@@ -63,7 +63,7 @@ export class JsonFormatter extends ErrorFormatter {
 
     const mapError = (error: HandlerError) =>
       JSON.parse(this.formatError(error, customOptions)) as Record<string, unknown>;
-    const chain = this.error.mapChain(mapError);
+    const chain = this.error.chain.map((error) => mapError(error));
 
     // eslint-disable-next-line unicorn/no-null -- Allow null values in JSON output
     return JSON.stringify(chain, null, customOptions.indentSize);

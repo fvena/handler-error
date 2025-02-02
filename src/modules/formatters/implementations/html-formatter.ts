@@ -1,5 +1,6 @@
 import type { HandlerError } from "../../../core/handler-error";
 import { ErrorFormatter } from "../base-formatter";
+import { escapeText } from "../../../core/utils/escape-text.utils";
 
 export interface HtmlFormatterOptions {
   showMetadata: boolean;
@@ -16,20 +17,6 @@ export interface HtmlFormatterOptions {
 function lowercaseFirstLetter(string_: string) {
   if (!string_) return string_;
   return string_.charAt(0).toLowerCase() + string_.slice(1);
-}
-
-function escapeHTML(input: string): string {
-  const map: Record<string, string> = {
-    '"': "&quot;",
-    "&": "&amp;",
-    "'": "&#039;",
-    "/": "&#x2F;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "`": "&#x60;",
-  };
-
-  return input.replaceAll(/[&<>"'`/]/g, (char) => map[char] ?? "");
 }
 
 /**
@@ -51,10 +38,10 @@ export class HtmlFormatter extends ErrorFormatter {
     return `
       <div class="error ${lowercaseFirstLetter(error.name)}">
         <h3 class="error-title">${error.name}</h3>
-        <p class="error-message">${escapeHTML(error.message)}</p>
+        <p class="error-message">${escapeText(error.message)}</p>
         ${options.showTimestamp ? `<div class="error-timestamp">${error.timestamp.toISOString()}</div>` : ""}
-        ${options.showMetadata && error.metadata ? `<div class="error-metadata"><pre>${escapeHTML(JSON.stringify(error.metadata))}</pre></div>` : ""}
-        ${options.showStackTrace && error.stack ? `<pre class="error-stack">${escapeHTML(error.stack)}</pre>` : ""}
+        ${options.showMetadata && error.metadata ? `<div class="error-metadata"><pre>${escapeText(JSON.stringify(error.metadata))}</pre></div>` : ""}
+        ${options.showStackTrace && error.stack ? `<pre class="error-stack">${escapeText(error.stack)}</pre>` : ""}
       </div>
     `;
   }

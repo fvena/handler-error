@@ -5,7 +5,6 @@ export * from "./code-handler-error";
 
 // Types & Constants
 export * from "./constants";
-export * from "./types/error-catalog.types";
 export * from "./types/handler-error.types";
 export * from "./types/serialize.types";
 

@@ -1,19 +1,19 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import type { Dictionary } from "../../src/core/code-handler-error";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ErrorSeverity } from "../../src/core/constants";
-import { StandardCatalog } from "../../src/modules/catalogs/implementations/standard-catalog";
 import { CodeHandlerError } from "../../src/core/code-handler-error";
 import { HandlerError } from "../../src/core/handler-error";
 
-const catalog = new StandardCatalog({
+const dictionary: Dictionary = {
   VAL001: { message: "Test error", severity: ErrorSeverity.CRITICAL },
   VAL002: { message: "Test warning", severity: ErrorSeverity.WARNING },
   VAL003: { message: "Test info", severity: ErrorSeverity.INFO },
   VAL004: { message: "Test debug", severity: ErrorSeverity.DEBUG },
-});
+};
 
 describe("CodeHandlerError", () => {
-  beforeAll(() => {
-    CodeHandlerError.registerCatalog(catalog);
+  beforeEach(() => {
+    CodeHandlerError.addDictionary(dictionary);
   });
 
   describe("constructor", () => {
@@ -235,11 +235,11 @@ describe("CodeHandlerError", () => {
   });
 
   describe("dependency resolution", () => {
-    it("should throw when ErrorCatalog is not registered", () => {
-      CodeHandlerError.registerCatalog(undefined as unknown as StandardCatalog);
+    it("should throw when Dictionary is not registered", () => {
+      CodeHandlerError.addDictionary(undefined as unknown as Dictionary);
 
       expect(() => new CodeHandlerError("VAL001")).toThrowError(
-        "The error catalog must be set before creating an instance of CodeHandlerError.",
+        "The error dictionary must be set before creating an instance of CodeHandlerError.",
       );
     });
   });
@@ -250,8 +250,6 @@ describe("CodeHandlerError", () => {
       class TestError extends CodeHandlerError {
         /* empty */
       }
-
-      TestError.registerCatalog(catalog);
 
       const error = new TestError("VAL001");
 
@@ -264,19 +262,21 @@ describe("CodeHandlerError", () => {
       expect(error.cause).toBeUndefined();
     });
 
-    it("should throw when ErrorCatalog is not registered", () => {
+    it("should throw when Dictionary is not registered", () => {
       // Arrange
       class TestError extends CodeHandlerError {
         /* empty */
       }
 
+      CodeHandlerError.addDictionary(undefined as unknown as Dictionary);
+
       // Assert
       expect(() => new TestError("VAL001")).toThrowError(
-        "The error catalog must be set before creating an instance of CodeHandlerError.",
+        "The error dictionary must be set before creating an instance of CodeHandlerError.",
       );
     });
 
-    it("should create an error with a class without catalog registered that extends from other class", () => {
+    it("should create an error with a class without dictionary registered that extends from other class", () => {
       // Arrange
       class TestError extends CodeHandlerError {
         /* empty */
@@ -285,7 +285,7 @@ describe("CodeHandlerError", () => {
         /* empty */
       }
 
-      TestError.registerCatalog(catalog);
+      TestError.addDictionary(dictionary);
 
       const error = new TestError2("VAL001");
 
@@ -296,6 +296,57 @@ describe("CodeHandlerError", () => {
       expect(error.severity).toBe(ErrorSeverity.CRITICAL);
       expect(error.metadata).toBeUndefined();
       expect(error.cause).toBeUndefined();
+    });
+
+    it("Should replace the catalog in the child class", () => {
+      // Arrange
+      class TestError extends CodeHandlerError {
+        /* empty */
+      }
+      class TestError2 extends TestError {
+        /* empty */
+      }
+
+      const dictionary2 = {
+        VAL001: { message: "Test error 2", severity: ErrorSeverity.WARNING },
+      };
+
+      TestError.addDictionary(dictionary);
+      TestError2.addDictionary(dictionary2);
+
+      const error = new TestError("VAL001");
+      const error2 = new TestError2("VAL001");
+
+      // Assert
+      expect(error.message).toBe("Test error");
+      expect(error2.message).toBe("Test error 2");
+    });
+
+    it("should handle multiple levels of inheritance with different dictionaries", () => {
+      // Arrange
+      class TestError extends CodeHandlerError {
+        /* empty */
+      }
+      class TestError2 extends TestError {
+        /* empty */
+      }
+      class TestError3 extends TestError2 {
+        /* empty */
+      }
+
+      const dictionary2 = {
+        VAL002: { message: "Test error 2", severity: ErrorSeverity.WARNING },
+      };
+
+      TestError.addDictionary(dictionary);
+      TestError2.addDictionary(dictionary2);
+
+      const error = new TestError("VAL001");
+      const error2 = new TestError3("VAL002");
+
+      // Assert
+      expect(error.message).toBe("Test error");
+      expect(error2.message).toBe("Test error 2");
     });
   });
 });

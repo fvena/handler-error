@@ -191,11 +191,11 @@ const error = new HandlerError("Something went wrong", "ERR_CUSTOM", metadata, c
 
 ### CodeHandlerError
 
-The CodeHandlerError class extends the base HandlerError class and integrates with the ErrorCatalog module to provide centralized error management. It allows you to define errors using a predefined error code from the catalog, automatically retrieving associated metadata such as messages and severity.
+The CodeHandlerError class extends the base HandlerError class and integrates with the DictionaryResolver module to provide centralized error management. It allows you to define errors using a predefined error code from the dictionary, automatically retrieving associated metadata such as messages and severity.
 
-the CodeHandlerError class requires an error code as the first argument. This code is used to retrieve the error message and severity from the catalog. You can also include a message as the second argument to override the default message.
+the CodeHandlerError class requires an error code as the first argument. This code is used to retrieve the error message and severity from the dictionary. You can also include a message as the second argument to override the default message.
 
-> **Note:** If the provided error code is not found in the catalog, CodeHandlerError will throw an error. Ensure all error codes are registered in the ErrorCatalog before use.
+> **Note:** If the provided error code is not found in the dictionary, CodeHandlerError will throw an error. Ensure all error codes are registered in the DictionaryResolver before use.
 
 All API methods and properties from the HandlerError class are available in the CodeHandlerError class.
 
@@ -330,49 +330,49 @@ console.log(mostSevere.message); // Output: Something went wrong
 const serializedChain = ErrorChain.serializeChain(cause);
 ```
 
-### Error Catalog
+### Error Dictionary
 
-The ErrorCatalog module provides a centralized registry for managing error codes and their associated metadata. It allows developers to define a catalog of errors and retrieve information such as error messages, severity levels, and additional context by using error codes.
+The DictionaryResolver module provides a centralized registry for managing error codes and their associated metadata. It allows developers to define a dictionary of errors and retrieve information such as error messages, severity levels, and additional context by using error codes.
 
-| Method            | Description                                         | Return Value        |
-| ----------------- | --------------------------------------------------- | ------------------- |
-| `registerCatalog` | Register a catalog of errors.                       | `void`              |
-| `clearCatalog`    | Clear the error catalog.                            | `void`              |
-| `getEntry`        | Retrieve the error entry for a specific error code. | `ErrorCatalogEntry` |
+| Method               | Description                                         | Return Value           |
+| -------------------- | --------------------------------------------------- | ---------------------- |
+| `registerDictionary` | Register a dictionary of errors.                    | `void`                 |
+| `clearDictionary`    | Clear the error dictionary.                         | `void`                 |
+| `getEntry`           | Retrieve the error entry for a specific error code. | `ErrorDictionaryEntry` |
 
 ```typescript
-import { ErrorCatalog } from "handler-error";
+import { DictionaryResolver } from "handler-error";
 import { ErrorSeverity } from "handler-error";
 
-const catalog = {
+const dictionary = {
   VAL_001: { message: "Critical validation error", severity: ErrorSeverity.CRITICAL },
   VAL_002: { message: "Validation warning", severity: ErrorSeverity.WARNING },
   VAL_003: { message: "Informational message", severity: ErrorSeverity.INFO },
 };
 
-// Register the catalog
-ErrorCatalog.registerCatalog(catalog);
+// Register the dictionary
+DictionaryResolver.registerDictionary(dictionary);
 
 // Retrieve an error entry
-const entry = ErrorCatalog.getEntry("VAL_001");
+const entry = DictionaryResolver.getEntry("VAL_001");
 console.log(entry.message); // Output: Critical validation error
 console.log(entry.severity); // Output: critical
 ```
 
 #### Using Dynamic Messages
 
-The ErrorCatalog allows defining error messages with placeholders in the format {{ key }}, where key corresponds to a metadata property. These placeholders are replaced with the values provided when the error is created.
+The DictionaryResolver allows defining error messages with placeholders in the format {{ key }}, where key corresponds to a metadata property. These placeholders are replaced with the values provided when the error is created.
 
 ```typescript
-import { ErrorCatalog } from "handler-error";
+import { DictionaryResolver } from "handler-error";
 import { ErrorSeverity } from "handler-error";
 
-const catalog = {
+const dictionary = {
   VAL001: { message: "Validation error for user {{ user }}", severity: ErrorSeverity.ERROR },
 };
 
-// Register the catalog
-ErrorCatalog.registerCatalog(catalog);
+// Register the dictionary
+DictionaryResolver.registerDictionary(dictionary);
 
 // Create an error with metadata
 const error = new CodeHandlerError("VAL001", { user: "John Doe" });

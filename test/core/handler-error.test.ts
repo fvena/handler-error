@@ -225,7 +225,7 @@ describe("HandlerError", () => {
       const error = new HandlerError("Test error", topError);
 
       // Act
-      const chain = error.getChain();
+      const chain = error.chain.get();
 
       // Assert
       expect(chain).toHaveLength(4);
@@ -240,7 +240,7 @@ describe("HandlerError", () => {
       const error = new HandlerError("Test error", topError);
 
       // Assert
-      expect(error.getChainRoot().message).toBe("Root error");
+      expect(error.chain.root().message).toBe("Root error");
     });
 
     it("should map the error chain", () => {
@@ -248,7 +248,7 @@ describe("HandlerError", () => {
       const error = new HandlerError("Test error", topError);
 
       // Act
-      const chain = error.mapChain((error) => error.message);
+      const chain = error.chain.map((error) => error.message);
 
       // Assert
       expect(chain).toEqual(["Test error", "Top error", "Middle error", "Root error"]);
@@ -259,7 +259,7 @@ describe("HandlerError", () => {
       const error = new HandlerError.error("Test error", topError);
 
       // Act
-      const mostSevere = error.findMostSevereInChain();
+      const mostSevere = error.chain.mostSevere();
 
       // Assert
       expect(mostSevere.severity).toBe(ErrorSeverity.CRITICAL);
@@ -271,7 +271,7 @@ describe("HandlerError", () => {
       const error = new HandlerError("Test error", topError);
 
       // Act
-      const serializedChain = error.serializeChain();
+      const serializedChain = error.chain.serialize();
 
       // Assert
       expect(serializedChain).toHaveLength(4);
@@ -286,7 +286,7 @@ describe("HandlerError", () => {
       const error = new HandlerError("Test error", topError);
 
       // Act
-      const errorString = error.toStringChain();
+      const errorString = error.chain.toString();
 
       // Assert
       expect(errorString).toBe(
@@ -304,7 +304,7 @@ describe("HandlerError", () => {
     const topError = new HandlerError("Top error", "TOP001", rootError);
 
     // Act
-    const errorString = topError.toStringChain();
+    const errorString = topError.chain.toString();
 
     // Assert
     expect(errorString).toBe(

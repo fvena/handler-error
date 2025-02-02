@@ -296,7 +296,7 @@ const queryTime = HandlerError.debug("Query took 1.2s"); // Performance tracking
 
 ### Handling Error Chains
 
-The `ErrorChain` module provides utilities to work with chains of errors caused by one another. It allows you to trace, analyze, and process errors in a hierarchy.
+The `ErrorChainUtils` module provides utilities to work with chains of errors caused by one another. It allows you to trace, analyze, and process errors in a hierarchy.
 
 This module makes it easy to trace and analyze errors in complex systems, ensuring you can track their causes and severity efficiently.
 
@@ -309,25 +309,25 @@ This module makes it easy to trace and analyze errors in complex systems, ensuri
 | `serializeChain` | Serializes the entire chain into an array of plain objects.  | `SerializedError[]`    |
 
 ```typescript
-import { ErrorChain } from "handler-error";
+import { ErrorChainUtils } from "handler-error";
 
 const error = new HandlerError("Something went wrong", "VAL_001");
 const cause = new HandlerError("Internal error", "VAL_002", undefined, error);
 
 // Get the full chain of errors
-const chain = ErrorChain.getErrorChain(cause);
+const chain = ErrorChainUtils.getErrorChain(cause);
 console.log(chain.length); // Output: 2
 
 // Get the root cause of the chain
-const rootCause = ErrorChain.getRootCause(cause);
+const rootCause = ErrorChainUtils.getRootCause(cause);
 console.log(rootCause.message); // Output: Something went wrong
 
 // Find the most severe error in the chain
-const mostSevere = ErrorChain.findMostSevere(cause);
+const mostSevere = ErrorChainUtils.findMostSevere(cause);
 console.log(mostSevere.message); // Output: Something went wrong
 
 // Serialize the entire chain
-const serializedChain = ErrorChain.serializeChain(cause);
+const serializedChain = ErrorChainUtils.serializeChain(cause);
 ```
 
 ### Error Dictionary
@@ -502,7 +502,7 @@ console.log(formatter.formatChain(cause));
 #### Using Error Formatters with Custom Error Chains
 
 ```typescript
-import { ErrorChain, ErrorFormatter, HandlerError } from "handler-error";
+import { ErrorChainUtils, ErrorFormatter, HandlerError } from "handler-error";
 
 class CustomErrorFormatter extends ErrorFormatter {
   format(error: HandlerError): string {
@@ -510,7 +510,9 @@ class CustomErrorFormatter extends ErrorFormatter {
   }
 
   override formatChain(error: HandlerError): string {
-    return ErrorChain.mapErrors(error, (item, index) => `${index}: ${item.message}`).join("\n");
+    return ErrorChainUtils.mapErrors(error, (item, index) => `${index}: ${item.message}`).join(
+      "\n",
+    );
   }
 }
 

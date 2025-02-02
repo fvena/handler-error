@@ -149,7 +149,7 @@ describe("ErrorLogger", () => {
       }
 
       public formatChain(): string {
-        const chain = this.error.mapChain((error) => `TestFormatter: ${error.message}`);
+        const chain = this.error.chain.map((error) => `TestFormatter: ${error.message}`);
         return chain.join("\n");
       }
     }

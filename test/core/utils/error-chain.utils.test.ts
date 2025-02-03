@@ -149,6 +149,7 @@ describe("ErrorChainUtils", () => {
       // Assert
       expect(serializedChain).toStrictEqual([
         {
+          code: undefined,
           id: topError.id,
           message: "Top error",
           metadata: undefined,
@@ -157,6 +158,7 @@ describe("ErrorChainUtils", () => {
           timestamp: topError.timestamp.toISOString(),
         },
         {
+          code: undefined,
           id: middleError.id,
           message: "Middle error",
           metadata: undefined,
@@ -165,6 +167,7 @@ describe("ErrorChainUtils", () => {
           timestamp: middleError.timestamp.toISOString(),
         },
         {
+          code: undefined,
           id: rootError.id,
           message: "Root error",
           metadata: undefined,
@@ -187,6 +190,7 @@ describe("ErrorChainUtils", () => {
       // Assert
       expect(serializedChain).toStrictEqual([
         {
+          code: undefined,
           id: topError.id,
           message: "Top error",
           metadata: { key: "value", key2: { key3: "value2", key4: ["value4", "value5"] } },
@@ -195,6 +199,7 @@ describe("ErrorChainUtils", () => {
           timestamp: topError.timestamp.toISOString(),
         },
         {
+          code: undefined,
           id: rootError.id,
           message: "Root error",
           metadata: { key: "value" },

@@ -323,6 +323,7 @@ describe("HandlerError", () => {
       // Assert
       expect(serializedError).toStrictEqual({
         cause: undefined,
+        code: undefined,
         id: expect.any(String), // eslint-disable-line @typescript-eslint/no-unsafe-assignment -- It's a test
         message: "Test error",
         metadata: undefined,
@@ -345,6 +346,7 @@ describe("HandlerError", () => {
       expect(serializedError).toStrictEqual({
         cause: {
           cause: undefined,
+          code: undefined,
           id: expect.any(String), // eslint-disable-line @typescript-eslint/no-unsafe-assignment -- It's a test
           message: "Root error",
           metadata: undefined,
@@ -352,6 +354,7 @@ describe("HandlerError", () => {
           severity: ErrorSeverity.ERROR,
           timestamp: expect.any(String), // eslint-disable-line @typescript-eslint/no-unsafe-assignment -- It's a test
         },
+        code: "VAL001",
         id: expect.any(String), // eslint-disable-line @typescript-eslint/no-unsafe-assignment -- It's a test
         message: "Test error",
         metadata: { key: "value" },

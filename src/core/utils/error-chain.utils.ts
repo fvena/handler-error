@@ -1,4 +1,4 @@
-import type { SerializedErrorChain } from "../types/serialize.types";
+import type { SerializedError } from "../types/serialize.types";
 import { SEVERITY_WEIGHTS } from "../constants";
 import { HandlerError } from "../handler-error";
 
@@ -67,15 +67,18 @@ function findMostSevere(error: HandlerError): HandlerError {
  *
  * @returns An array of serialized errors, each containing key properties.
  */
-function chainSerialize(error: HandlerError): SerializedErrorChain[] {
-  return getErrorsChain(error).map((item) => ({
-    id: item.id,
-    message: item.message,
-    metadata: item.metadata,
-    name: item.name,
-    severity: item.severity,
-    timestamp: item.timestamp.toISOString(),
-  }));
+function chainSerialize(error: HandlerError): SerializedError[] {
+  const chain: SerializedError[] = [];
+  let current: Error | undefined = error;
+
+  while (current instanceof HandlerError) {
+    const serialized = current.serialize();
+    delete serialized.cause;
+    chain.push(serialized);
+    current = current.cause;
+  }
+
+  return chain;
 }
 
 /**

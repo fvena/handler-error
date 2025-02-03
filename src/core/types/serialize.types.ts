@@ -4,6 +4,7 @@ import type { Metadata, Severity } from "./handler-error.types";
  * Represents the serialized error.
  */
 export interface SerializedError {
+  [key: string]: unknown;
   cause?: SerializedError;
   code?: string;
   id: string;
@@ -13,8 +14,3 @@ export interface SerializedError {
   severity: Severity;
   timestamp: string;
 }
-
-/**
- * Represents the serialized error chain.
- */
-export type SerializedErrorChain = Omit<SerializedError, "cause">;

@@ -132,15 +132,36 @@ export class HandlerError extends Error {
    * @returns An object representing the serialized error.
    */
   public serialize(): SerializedError {
-    return {
-      cause: this.cause?.serialize(),
-      id: this.id,
-      message: this.message,
-      metadata: this.metadata,
-      name: this.name,
-      severity: this.severity,
-      timestamp: this.timestamp.toISOString(),
-    };
+    const plainObject: Record<string, unknown> = {};
+
+    // Obtiene todas las propiedades (enumerables y no enumerables) definidas en la instancia.
+    for (const property of Object.getOwnPropertyNames(this)) {
+      // Excluye propiedades internas que no quieras serializar.
+      if (["__chainCache", "featureInstances", "featureProxies", "stack"].includes(property)) {
+        continue;
+      }
+
+      const value = (this as Record<string, unknown>)[property];
+
+      // Tratamiento especial para 'cause'
+      if (property === "cause" && value) {
+        plainObject[property] =
+          typeof (value as { serialize?: () => unknown }).serialize === "function"
+            ? (value as { serialize: () => unknown }).serialize()
+            : value;
+        continue;
+      }
+
+      // Tratamiento especial para 'timestamp'
+      if (property === "timestamp" && value instanceof Date) {
+        plainObject[property] = value.toISOString();
+        continue;
+      }
+
+      plainObject[property] = value;
+    }
+
+    return plainObject as SerializedError;
   }
 
   /**

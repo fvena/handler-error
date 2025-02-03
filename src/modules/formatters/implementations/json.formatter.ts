@@ -1,5 +1,5 @@
 import type { HandlerError } from "../../../core/handler-error";
-import { ErrorFormatter } from "../base-formatter";
+import { ErrorFormatter } from "../base.formatter";
 
 export interface JsonFormatterOptions {
   indentSize: number;

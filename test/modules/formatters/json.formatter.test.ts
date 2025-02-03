@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { HandlerError } from "../../../src/core/handler-error";
-import { JsonFormatter } from "../../../src/modules/formatters/implementations/json-formatter";
+import { JsonFormatter } from "../../../src/modules/formatters/implementations/json.formatter";
 
 describe("JsonFormatter", () => {
   describe("format", () => {

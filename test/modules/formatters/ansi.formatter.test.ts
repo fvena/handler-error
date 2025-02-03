@@ -4,7 +4,7 @@ import {
   AnsiFormatter,
   colors,
   formats,
-} from "../../../src/modules/formatters/implementations/ansi-formatter";
+} from "../../../src/modules/formatters/implementations/ansi.formatter";
 
 describe("AnsiFormatter", () => {
   describe("format", () => {

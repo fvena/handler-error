@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { HandlerError } from "../../../src/core/handler-error";
-import { TextFormatter } from "../../../src/modules/formatters/implementations/text-formatter";
+import { TextFormatter } from "../../../src/modules/formatters/implementations/text.formatter";
 
 describe("TextFormatter", () => {
   describe("format", () => {

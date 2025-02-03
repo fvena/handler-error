@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { HandlerError } from "../../src/core/handler-error";
 import { ErrorSeverity } from "../../src/core/constants";
-import { ErrorFormatter } from "../../src/modules/formatters/base-formatter";
-import { ErrorLogger } from "../../src/modules/loggers/base-logger";
+import { ErrorFormatter } from "../../src/modules/formatters/base.formatter";
+import { ErrorLogger } from "../../src/modules/loggers/base.logger";
 
 const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {
   /* empty */
@@ -430,8 +430,11 @@ describe("HandlerError", () => {
       /* Empty */
     }
 
-    beforeEach(() => {
-      EnhancedHandlerError.registerLoggers(loggerClasses).registerFormatters(formatterClasses);
+    beforeAll(() => {
+      EnhancedHandlerError.registerModule("loggers", loggerClasses).registerModule(
+        "formatters",
+        formatterClasses,
+      );
     });
 
     it("should register and use formatters", () => {

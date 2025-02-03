@@ -1,5 +1,5 @@
 import type { HandlerError } from "../../../core/handler-error";
-import { ErrorFormatter } from "../base-formatter";
+import { ErrorFormatter } from "../base.formatter";
 import { escapeText } from "../../../core/utils/escape-text.utils";
 
 export interface HtmlFormatterOptions {

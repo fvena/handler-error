@@ -1,7 +1,7 @@
 import type { HandlerError } from "../../../core/handler-error";
-import type { ErrorFormatter } from "../../formatters/base-formatter";
+import type { ErrorFormatter } from "../../formatters/base.formatter";
 import type { Severity } from "../../../core/types/handler-error.types";
-import { ErrorLogger } from "../base-logger";
+import { ErrorLogger } from "../base.logger";
 import { ErrorSeverity, SEVERITY_WEIGHTS } from "../../../core/constants";
 
 export interface ConsoleLoggerOptions {

@@ -11,5 +11,8 @@ const ESCAPE_MAP: Record<string, string> = {
 };
 
 export function escapeText(input: string): string {
+  if (typeof input !== "string") {
+    return "";
+  }
   return input.replaceAll(ESCAPE_REGEX, (char) => ESCAPE_MAP[char] ?? "");
 }

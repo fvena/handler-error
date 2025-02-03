@@ -5,7 +5,8 @@ import { ErrorSeverity } from "./constants";
 import { parseErrorArguments } from "./utils/parse-error-arguments.utils";
 import { ErrorChainUtils } from "./utils/error-chain.utils";
 
-type FeatureMap<T> = Record<string, new (error: HandlerError) => T>;
+export type FeatureConstructor<T> = new (error: HandlerError) => T;
+export type FeatureMap<T> = Record<string, FeatureConstructor<T>>;
 
 /**
  * Base error class for handling errors.
@@ -73,7 +74,6 @@ export class HandlerError extends Error {
     }
   }
 
-  /* eslint-disable security/detect-object-injection -- Necessary to allow dynamic property access for feature registration */
   private getFeatureInstance<T>(featureName: string) {
     const availableFeatures = (this.constructor as typeof HandlerError).availableFeatures;
 
@@ -98,7 +98,6 @@ export class HandlerError extends Error {
       },
     }) as Record<string, T>;
   }
-  /* eslint-enable security/detect-object-injection */
 
   /**
    * Registers a new module to be used with the error.
@@ -107,15 +106,11 @@ export class HandlerError extends Error {
    * @param implementations - A record of feature names and their corresponding implementations.
    * @returns The `HandlerError` class with the new module registered.
    */
-  public static registerModule<T>(
-    moduleKey: string,
-    implementations: Record<string, new (error: HandlerError) => T>,
-  ) {
-    // Puedes agregar validaciones adicionales, por ejemplo, que el módulo no esté ya registrado
+  public static registerModule<T>(moduleKey: string, implementations: FeatureMap<T>) {
     if (this.availableFeatures[moduleKey]) {
-      throw new Error(`El módulo '${moduleKey}' ya está registrado.`);
+      throw new Error(`Module '${moduleKey}' is already registered.`);
     }
-    this.availableFeatures[moduleKey] = implementations;
+    HandlerError.availableFeatures[moduleKey] = implementations;
     return this;
   }
 

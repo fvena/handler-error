@@ -1,4 +1,4 @@
-import type { Metadata } from "../types/handler-error.types";
+import type { Metadata, ProcessedArguments } from "../types/handler-error.types";
 import { HandlerError } from "../handler-error";
 import { convertToHandlerError } from "./convert-to-handler-error.utils";
 
@@ -17,11 +17,11 @@ function isMetadata(value: unknown): value is Metadata {
  * - `code`: The error code if provided.
  * - `metadata`: Additional metadata if provided.
  */
-export function processArguments(
+export function parseErrorArguments(
   argument2?: Error | Metadata | string,
   argument3?: Error | Metadata,
   argument4?: Error,
-) {
+): ProcessedArguments {
   let cause: HandlerError | undefined;
   let code: string | undefined;
   let metadata: Metadata | undefined;

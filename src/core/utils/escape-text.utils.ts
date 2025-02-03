@@ -1,13 +1,15 @@
-export function escapeText(input: string): string {
-  const map: Record<string, string> = {
-    '"': "&quot;",
-    "&": "&amp;",
-    "'": "&#039;",
-    "/": "&#x2F;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "`": "&#x60;",
-  };
+const ESCAPE_REGEX = /[&<>"'`/]/g;
 
-  return input.replaceAll(/[&<>"'`/]/g, (char) => map[char] ?? "");
+const ESCAPE_MAP: Record<string, string> = {
+  '"': "&quot;",
+  "&": "&amp;",
+  "'": "&#039;",
+  "/": "&#x2F;",
+  "<": "&lt;",
+  ">": "&gt;",
+  "`": "&#x60;",
+};
+
+export function escapeText(input: string): string {
+  return input.replaceAll(ESCAPE_REGEX, (char) => ESCAPE_MAP[char] ?? "");
 }

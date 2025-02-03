@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { HandlerError } from "../../../src/core/handler-error";
-import { processArguments } from "../../../src/core/utils/process-arguments.utils";
+import { parseErrorArguments } from "../../../src/core/utils/parse-error-arguments.utils";
 
-describe("processArguments", () => {
+describe("parseErrorArguments", () => {
   describe("when all arguments are undefined", () => {
     it("should return undefined for all properties", () => {
       // Act
-      const { cause, code, metadata } = processArguments();
+      const { cause, code, metadata } = parseErrorArguments();
 
       // Assert
       expect(cause).toBeUndefined();
@@ -21,7 +21,7 @@ describe("processArguments", () => {
       const argument2 = "ERR001";
 
       // Act
-      const { code } = processArguments(argument2);
+      const { code } = parseErrorArguments(argument2);
 
       // Assert
       expect(code).toBe("ERR001");
@@ -33,7 +33,7 @@ describe("processArguments", () => {
       const argument3 = { key: "value" };
 
       // Act
-      const { code, metadata } = processArguments(argument2, argument3);
+      const { code, metadata } = parseErrorArguments(argument2, argument3);
 
       // Assert
       expect(code).toBe("ERR001");
@@ -46,7 +46,7 @@ describe("processArguments", () => {
       const argument3 = new Error("Test cause");
 
       // Act
-      const { cause, code } = processArguments(argument2, argument3);
+      const { cause, code } = parseErrorArguments(argument2, argument3);
 
       // Assert
       expect(code).toBe("ERR001");
@@ -61,7 +61,7 @@ describe("processArguments", () => {
       const argument4 = new Error("Test cause");
 
       // Act
-      const { cause, code, metadata } = processArguments(argument2, argument3, argument4);
+      const { cause, code, metadata } = parseErrorArguments(argument2, argument3, argument4);
 
       // Assert
       expect(code).toBe("ERR001");
@@ -77,7 +77,7 @@ describe("processArguments", () => {
       const argument2 = { key: "value" };
 
       // Act
-      const { metadata } = processArguments(argument2);
+      const { metadata } = parseErrorArguments(argument2);
 
       // Assert
       expect(metadata).toEqual({ key: "value" });
@@ -89,7 +89,7 @@ describe("processArguments", () => {
       const argument3 = new Error("Test cause");
 
       // Act
-      const { cause, metadata } = processArguments(argument2, argument3);
+      const { cause, metadata } = parseErrorArguments(argument2, argument3);
 
       // Assert
       expect(metadata).toEqual({ key: "value" });
@@ -104,7 +104,7 @@ describe("processArguments", () => {
       const argument2 = new Error("Test cause");
 
       // Act
-      const { cause } = processArguments(argument2);
+      const { cause } = parseErrorArguments(argument2);
 
       // Assert
       expect(cause).toBeInstanceOf(HandlerError);

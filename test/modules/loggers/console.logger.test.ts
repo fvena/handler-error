@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { HandlerError } from "../../../src/core/handler-error";
-import { ErrorFormatter } from "../../../src/modules/formatters/base-formatter";
-import { ConsoleLogger } from "../../../src/modules/loggers/implementations/console-logger";
+import { ErrorFormatter } from "../../../src/modules/formatters/base.formatter";
+import { ConsoleLogger } from "../../../src/modules/loggers/implementations/console.logger";
 
 const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {
   /* empty */

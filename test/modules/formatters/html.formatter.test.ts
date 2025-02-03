@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { HandlerError } from "../../../src/core/handler-error";
-import { HtmlFormatter } from "../../../src/modules/formatters/implementations/html-formatter";
+import { HtmlFormatter } from "../../../src/modules/formatters/implementations/html.formatter";
 
 describe("HtmlFormatter", () => {
   describe("format", () => {

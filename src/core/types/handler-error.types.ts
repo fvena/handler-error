@@ -20,3 +20,9 @@ export interface HandlerErrorChainAPI {
   serialize: () => SerializedError[];
   toString: () => string;
 }
+
+export interface ProcessedArguments {
+  cause?: HandlerError;
+  code?: string;
+  metadata?: Metadata;
+}

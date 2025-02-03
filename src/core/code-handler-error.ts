@@ -1,7 +1,7 @@
 import type { Metadata, Severity } from "./types/handler-error.types";
 import { defaultResolveEntry } from "./utils/default-resolve-entry.utils";
 import { HandlerError } from "./handler-error";
-import { processArguments } from "./utils/process-arguments.utils";
+import { parseErrorArguments } from "./utils/parse-error-arguments.utils";
 
 export type DictionaryEntry = Record<string, unknown> & {
   message: string;
@@ -33,7 +33,7 @@ export class CodeHandlerError extends HandlerError {
     }
 
     // Get metadata from the arguments
-    const { metadata } = processArguments(argument2, argument3, argument4);
+    const { metadata } = parseErrorArguments(argument2, argument3, argument4);
 
     const dictionaryEntry = new.target.resolveEntry(new.target.dictionary, code, metadata);
 

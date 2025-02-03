@@ -1,10 +1,8 @@
 import type { HandlerErrorChainAPI, Metadata, Severity } from "./types/handler-error.types";
 import type { SerializedError } from "./types/serialize.types";
-import type { ErrorFormatter } from "../modules/formatters/base-formatter";
-import type { ErrorLogger } from "../modules/loggers/base-logger";
 import { randomUUID } from "node:crypto";
 import { ErrorSeverity } from "./constants";
-import { processArguments } from "./utils/process-arguments.utils";
+import { parseErrorArguments } from "./utils/parse-error-arguments.utils";
 import { ErrorChainUtils } from "./utils/error-chain.utils";
 
 type FeatureMap<T> = Record<string, new (error: HandlerError) => T>;
@@ -53,7 +51,7 @@ export class HandlerError extends Error {
     this.timestamp = new Date();
 
     // Parse constructor arguments
-    const { cause, code, metadata } = processArguments(argument2, argument3, argument4);
+    const { cause, code, metadata } = parseErrorArguments(argument2, argument3, argument4);
     this.cause = cause;
     this.code = code;
     this.metadata = metadata;
@@ -102,13 +100,22 @@ export class HandlerError extends Error {
   }
   /* eslint-enable security/detect-object-injection */
 
-  public static registerFormatters<T extends ErrorFormatter>(formatters: FeatureMap<T>) {
-    this.availableFeatures.formatters = formatters;
-    return this;
-  }
-
-  public static registerLoggers<T extends ErrorLogger>(loggers: FeatureMap<T>) {
-    this.availableFeatures.loggers = loggers;
+  /**
+   * Registers a new module to be used with the error.
+   *
+   * @param moduleKey - The key of the module to register.
+   * @param implementations - A record of feature names and their corresponding implementations.
+   * @returns The `HandlerError` class with the new module registered.
+   */
+  public static registerModule<T>(
+    moduleKey: string,
+    implementations: Record<string, new (error: HandlerError) => T>,
+  ) {
+    // Puedes agregar validaciones adicionales, por ejemplo, que el módulo no esté ya registrado
+    if (this.availableFeatures[moduleKey]) {
+      throw new Error(`El módulo '${moduleKey}' ya está registrado.`);
+    }
+    this.availableFeatures[moduleKey] = implementations;
     return this;
   }
 
